@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');  // Add Mongoose
+const cors = require('cors');
+
 require('dotenv').config();  // Add dotenv to load environment variables
 
 var indexRouter = require('./routes/index');
@@ -30,11 +32,19 @@ const movieSchema = new mongoose.Schema({
   trailerUrl: { type: String }, // YouTube link
   movieLength: { type: String }, // e.g., "2h 28m"
   shortDescription: { type: String }, // Optional short description
+  status: { type: String, enum: ['currentlyRunning', 'comingSoon'], required: true } // New field
 });
 
 const Movie = mongoose.model('Movie', movieSchema, 'moviesdb'); // Create Movie model
 
-// view engine setup
+// Add CORS configuration here
+app.use(cors({
+  origin: 'http://localhost:3000', // React frontend origin
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
+
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
@@ -49,7 +59,7 @@ app.use('/users', usersRouter);
 
 // Add a movie to the database
 app.post('/add-movie', async (req, res) => {
-  const { movieName, directorName, yearReleased, movieRating, moviePoster, trailerUrl, movieLength, shortDescription } = req.body;
+  const { movieName, directorName, yearReleased, movieRating, moviePoster, trailerUrl, movieLength, shortDescription, status } = req.body;
 
   try {
     const newMovie = new Movie({
@@ -61,6 +71,7 @@ app.post('/add-movie', async (req, res) => {
       trailerUrl,
       movieLength,
       shortDescription,
+      status // Add status to the movie
     });
 
     await newMovie.save();
@@ -71,17 +82,43 @@ app.post('/add-movie', async (req, res) => {
   }
 });
 
+// Get all movies
 app.get('/get-movies', async (req, res) => {
   console.log('GET /get-movies hit'); // Log when the route is accessed
   try {
     const movies = await Movie.find();
-    res.json(movies);
+
+    // Create arrays for currently running and coming soon movies
+    const currentlyRunning = movies.filter(movie => movie.status === 'currentlyRunning');
+    const comingSoon = movies.filter(movie => movie.status === 'comingSoon');
+
+    // Send structured response
+    res.json({ currentlyRunning, comingSoon });
   } catch (error) {
     console.error('Error retrieving movies:', error);
     res.status(500).send('Failed to retrieve movies');
   }
 });
 
+
+// Search movies
+app.get('/api/movies', async (req, res) => {
+  const { search } = req.query; // Get the search query from the request
+
+  if (!search) {
+    return res.status(400).send('Search query is required');
+  }
+
+  try {
+    const movies = await Movie.find({
+      movieName: { $regex: search, $options: 'i' } // Case-insensitive search
+    });
+    res.json(movies);
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    res.status(500).send('Failed to search movies');
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -99,7 +136,4 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-
-
-
-module.exports = app;
+module.exports = app; // Make sure to export the app
