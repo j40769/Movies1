@@ -1,0 +1,150 @@
+[{
+  "_id": {
+    "$oid": "66f1a88fb265f20090f46426"
+  },
+  "movieName": "Barbie",
+  "directorName": "Greta Gerwig",
+  "yearReleased": 2023,
+  "movieRating": 8,
+  "moviePoster": "https://i.ebayimg.com/00/s/MTYwMFgxMTA3/z/Cd0AAOSwocdkoDER/$_57.JPG?set_id=880000500F",
+  "trailerUrl": "https://www.youtube.com/watch?v=xyz123",
+  "movieLength": "1h 54m",
+  "shortDescription": "A story about Barbie discovering her true self.",
+  "status": "currentlyRunning",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1b618575c8b62dc7a3991"
+  },
+  "movieName": "Inception",
+  "directorName": "Christopher Nolan",
+  "yearReleased": 2010,
+  "movieRating": 8.8,
+  "moviePoster": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=YoHD9XEInc0",
+  "movieLength": "2h 28m",
+  "shortDescription": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.",
+  "status": "currentlyRunning",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1b75f575c8b62dc7a3995"
+  },
+  "movieName": "Red One",
+  "directorName": "Jake Kasdan",
+  "yearReleased": 2023,
+  "movieRating": 7.5,
+  "moviePoster": "https://i0.wp.com/www.thewrap.com/wp-content/uploads/2024/04/042924-Red-One-Image.jpg?fit=1200%2C675&ssl=1",
+  "trailerUrl": "https://www.youtube.com/watch?v=U8XH3W0cMss",
+  "movieLength": "1h 50m",
+  "shortDescription": "A holiday adventure that brings together beloved characters in a new story filled with magic and wonder.",
+  "status": "comingSoon",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1ba83575c8b62dc7a39a4"
+  },
+  "movieName": "Titanic",
+  "directorName": "James Cameron",
+  "yearReleased": 1997,
+  "movieRating": 7.8,
+  "moviePoster": "https://m.media-amazon.com/images/I/81CVRAQi46L._AC_UF894,1000_QL80_.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=LuPB43YSgCs",
+  "movieLength": "3h 14m",
+  "shortDescription": "A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.",
+  "status": "currentlyRunning",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bae6575c8b62dc7a39a9"
+  },
+  "movieName": "Fast X",
+  "directorName": "Louis Leterrier",
+  "yearReleased": 2023,
+  "movieRating": 7.1,
+  "moviePoster": "https://m.media-amazon.com/images/M/MV5BNzZmOTU1ZTEtYzVhNi00NzQxLWI5ZjAtNWNhNjEwY2E3YmZjXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_FMjpg_UX1000_.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=32RAq6JzY-w",
+  "movieLength": "2h 21m",
+  "shortDescription": "Dom Toretto and his family face a new threat in this high-octane adventure filled with daring heists and adrenaline-pumping car chases.",
+  "status": "currentlyRunning",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bb70575c8b62dc7a39ad"
+  },
+  "movieName": "The Godfather Part III",
+  "directorName": "Francis Ford Coppola",
+  "yearReleased": 1990,
+  "movieRating": 7.6,
+  "moviePoster": "https://upload.wikimedia.org/wikipedia/en/5/55/GodfatherIII2.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=UUkG37KSWf0",
+  "movieLength": "2h 42m",
+  "shortDescription": "Michael Corleone seeks to legitimize his family's business while dealing with the loss and consequences of his past.",
+  "status": "currentlyRunning",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bc76c51a7ac6d065f8e5"
+  },
+  "movieName": "Mufasa: The Lion King",
+  "directorName": "Barry Jenkins",
+  "yearReleased": 2024,
+  "movieRating": 9,
+  "moviePoster": "https://lumiere-a.akamaihd.net/v1/images/p_mufasa_d23_c301cb21.jpeg?region=0%2C0%2C540%2C810",
+  "trailerUrl": "https://www.youtube.com/watch?v=o17MF9vnabg",
+  "movieLength": "N/A",
+  "shortDescription": "A prequel exploring the life of Mufasa and how he became the legendary king of the Pride Lands.",
+  "status": "comingSoon",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bcf3c51a7ac6d065f8eb"
+  },
+  "movieName": "Smile 2",
+  "directorName": "Parker Finn",
+  "yearReleased": 2024,
+  "movieRating": 9,
+  "moviePoster": "https://m.media-amazon.com/images/M/MV5BYTg5OTMyMGMtYzMwNC00NDMyLWE0OGUtMTQ1ODcwM2FjOTM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=0HY6QFlBzUY",
+  "movieLength": "N/A",
+  "shortDescription": "The chilling sequel continues the story of terror as new characters confront the haunting legacy of the original.",
+  "status": "comingSoon",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bd4fc51a7ac6d065f8ef"
+  },
+  "movieName": "Moana 2",
+  "directorName": "Dana Ledoux Miller",
+  "yearReleased": 2024,
+  "movieRating": 9,
+  "moviePoster": "https://lumiere-a.akamaihd.net/v1/images/p_moana2_d23_eb995f91.jpeg",
+  "trailerUrl": "https://www.youtube.com/watch?v=hDZ7y8RP5HE",
+  "movieLength": "N/A",
+  "shortDescription": "In this sequel, Moana embarks on a new adventure that takes her beyond the reef, discovering new islands and challenges.",
+  "status": "comingSoon",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "66f1bda2c51a7ac6d065f8f3"
+  },
+  "movieName": "Venom: The Last Dance",
+  "directorName": "Kelly Marcel",
+  "yearReleased": 2024,
+  "movieRating": 9,
+  "moviePoster": "https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_.jpg",
+  "trailerUrl": "https://www.youtube.com/watch?v=__2bjWbetsA",
+  "movieLength": "N/A",
+  "shortDescription": "In this thrilling sequel, Venom faces new threats while grappling with his identity and the balance of power between him and Eddie Brock.",
+  "status": "comingSoon",
+  "__v": 0
+}]
