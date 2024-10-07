@@ -1,150 +1,94 @@
-[{
-  "_id": {
-    "$oid": "66f1a88fb265f20090f46426"
-  },
-  "movieName": "Barbie",
-  "directorName": "Greta Gerwig",
-  "yearReleased": 2023,
-  "movieRating": 8,
-  "moviePoster": "https://i.ebayimg.com/00/s/MTYwMFgxMTA3/z/Cd0AAOSwocdkoDER/$_57.JPG?set_id=880000500F",
-  "trailerUrl": "https://www.youtube.com/watch?v=xyz123",
-  "movieLength": "1h 54m",
-  "shortDescription": "A story about Barbie discovering her true self.",
-  "status": "currentlyRunning",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1b618575c8b62dc7a3991"
-  },
-  "movieName": "Inception",
-  "directorName": "Christopher Nolan",
-  "yearReleased": 2010,
-  "movieRating": 8.8,
-  "moviePoster": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=YoHD9XEInc0",
-  "movieLength": "2h 28m",
-  "shortDescription": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.",
-  "status": "currentlyRunning",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1b75f575c8b62dc7a3995"
-  },
-  "movieName": "Red One",
-  "directorName": "Jake Kasdan",
-  "yearReleased": 2023,
-  "movieRating": 7.5,
-  "moviePoster": "https://i0.wp.com/www.thewrap.com/wp-content/uploads/2024/04/042924-Red-One-Image.jpg?fit=1200%2C675&ssl=1",
-  "trailerUrl": "https://www.youtube.com/watch?v=U8XH3W0cMss",
-  "movieLength": "1h 50m",
-  "shortDescription": "A holiday adventure that brings together beloved characters in a new story filled with magic and wonder.",
-  "status": "comingSoon",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1ba83575c8b62dc7a39a4"
-  },
-  "movieName": "Titanic",
-  "directorName": "James Cameron",
-  "yearReleased": 1997,
-  "movieRating": 7.8,
-  "moviePoster": "https://m.media-amazon.com/images/I/81CVRAQi46L._AC_UF894,1000_QL80_.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=LuPB43YSgCs",
-  "movieLength": "3h 14m",
-  "shortDescription": "A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.",
-  "status": "currentlyRunning",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bae6575c8b62dc7a39a9"
-  },
-  "movieName": "Fast X",
-  "directorName": "Louis Leterrier",
-  "yearReleased": 2023,
-  "movieRating": 7.1,
-  "moviePoster": "https://m.media-amazon.com/images/M/MV5BNzZmOTU1ZTEtYzVhNi00NzQxLWI5ZjAtNWNhNjEwY2E3YmZjXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_FMjpg_UX1000_.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=32RAq6JzY-w",
-  "movieLength": "2h 21m",
-  "shortDescription": "Dom Toretto and his family face a new threat in this high-octane adventure filled with daring heists and adrenaline-pumping car chases.",
-  "status": "currentlyRunning",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bb70575c8b62dc7a39ad"
-  },
-  "movieName": "The Godfather Part III",
-  "directorName": "Francis Ford Coppola",
-  "yearReleased": 1990,
-  "movieRating": 7.6,
-  "moviePoster": "https://upload.wikimedia.org/wikipedia/en/5/55/GodfatherIII2.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=UUkG37KSWf0",
-  "movieLength": "2h 42m",
-  "shortDescription": "Michael Corleone seeks to legitimize his family's business while dealing with the loss and consequences of his past.",
-  "status": "currentlyRunning",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bc76c51a7ac6d065f8e5"
-  },
-  "movieName": "Mufasa: The Lion King",
-  "directorName": "Barry Jenkins",
-  "yearReleased": 2024,
-  "movieRating": 9,
-  "moviePoster": "https://lumiere-a.akamaihd.net/v1/images/p_mufasa_d23_c301cb21.jpeg?region=0%2C0%2C540%2C810",
-  "trailerUrl": "https://www.youtube.com/watch?v=o17MF9vnabg",
-  "movieLength": "N/A",
-  "shortDescription": "A prequel exploring the life of Mufasa and how he became the legendary king of the Pride Lands.",
-  "status": "comingSoon",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bcf3c51a7ac6d065f8eb"
-  },
-  "movieName": "Smile 2",
-  "directorName": "Parker Finn",
-  "yearReleased": 2024,
-  "movieRating": 9,
-  "moviePoster": "https://m.media-amazon.com/images/M/MV5BYTg5OTMyMGMtYzMwNC00NDMyLWE0OGUtMTQ1ODcwM2FjOTM4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=0HY6QFlBzUY",
-  "movieLength": "N/A",
-  "shortDescription": "The chilling sequel continues the story of terror as new characters confront the haunting legacy of the original.",
-  "status": "comingSoon",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bd4fc51a7ac6d065f8ef"
-  },
-  "movieName": "Moana 2",
-  "directorName": "Dana Ledoux Miller",
-  "yearReleased": 2024,
-  "movieRating": 9,
-  "moviePoster": "https://lumiere-a.akamaihd.net/v1/images/p_moana2_d23_eb995f91.jpeg",
-  "trailerUrl": "https://www.youtube.com/watch?v=hDZ7y8RP5HE",
-  "movieLength": "N/A",
-  "shortDescription": "In this sequel, Moana embarks on a new adventure that takes her beyond the reef, discovering new islands and challenges.",
-  "status": "comingSoon",
-  "__v": 0
-},
-{
-  "_id": {
-    "$oid": "66f1bda2c51a7ac6d065f8f3"
-  },
-  "movieName": "Venom: The Last Dance",
-  "directorName": "Kelly Marcel",
-  "yearReleased": 2024,
-  "movieRating": 9,
-  "moviePoster": "https://m.media-amazon.com/images/M/MV5BZDMyYWU4NzItZDY0MC00ODE2LTkyYTMtMzNkNDdmYmFhZDg0XkEyXkFqcGc@._V1_.jpg",
-  "trailerUrl": "https://www.youtube.com/watch?v=__2bjWbetsA",
-  "movieLength": "N/A",
-  "shortDescription": "In this thrilling sequel, Venom faces new threats while grappling with his identity and the balance of power between him and Eddie Brock.",
-  "status": "comingSoon",
-  "__v": 0
-}]
+Cinema E-Booking System
+Problem Statement
+The Cinema E-Booking System is a web-based application designed to facilitate online movie ticket booking, providing users with information on movies, showtimes, and allowing them to book and pay for their tickets online. The system also allows administrators to manage movies, ticket prices, and user information effectively.
+
+Key Features
+User Functionality:
+View Movie Information: Users can browse details for thousands of movies, including show times, trailers, synopsis, cast, and reviews.
+Online Booking & Payment: Users can select seats, book tickets for their chosen movie, and pay securely online.
+Print/Save Tickets: After payment, users can save or print their e-tickets.
+Registration & Account Management: Users can register an account, verify their email, and manage their profile and payment information.
+Search & Filter: Users can search and filter movies by category, title, or show date, with an easy booking facility available on all relevant screens.
+Order History & Refunds: Users can view their order history and request ticket returns for a refund up to 60 minutes before showtime.
+Administrator Functionality:
+Movie & Pricing Management: Admins can add, update, or delete movie details, set ticket prices by age category, and manage promotions.
+User Management: Admins can update user information, add new administrators, and suspend user accounts if necessary.
+Real-Time Statistics & Reports: Admins can view real-time booking and sales data to monitor performance.
+Age-Based Ticket Pricing:
+Child, Adult, and Senior: Ticket prices are adjusted based on the age category of the ticket owner.
+Development Process
+Process Model
+The system is developed using a hybrid process model combining Waterfall and Agile methodologies:
+
+Waterfall is applied for overall project planning, phase-setting, and deliverable tracking.
+Agile practices are used within each phase for flexible and iterative development, with coding divided into sprints for incremental progress.
+UI & Prototyping
+Early prototyping will be used to design and gather feedback on the UI, ensuring a user-friendly experience and reducing the risk of failure or dissatisfaction.
+
+Testing & Quality Assurance
+Once implemented, the system will undergo extensive testing:
+
+Subsystem Testing: Validate individual components.
+Integration Testing: Ensure different parts work together seamlessly.
+Acceptance Testing: Confirm the system meets all user requirements.
+High-Level System Requirements
+Movie Management:
+
+Admins can add/update movie details (title, category, cast, etc.) and show times.
+Admins can delete movies and manage promotional content.
+Ticket Management:
+
+Age-based pricing (Child, Adult, Senior) with online booking fees and promotions.
+Users select tickets based on movie, show date, time, and seats.
+User Management:
+
+Users register with personal and payment details (secured via email verification).
+Users can manage their profile, view order history, and subscribe/unsubscribe from promotions.
+Secure password recovery for registered users.
+Search & Booking:
+
+Browse Facility: Home page filters "Now Playing" and "Coming Soon" movies.
+Search & Filter: Users can search movies by category, title, and show dates.
+Seat Selection: Users can graphically select seats in the hall.
+Payment & Confirmation: Secure checkout with promotion code usage and booking confirmation sent via email.
+Reports & Analytics:
+
+Admins can generate predefined reports on sales and show statistics.
+The system supports multi-user access with appropriate authorization levels.
+Technical Specifications:
+
+Persistent Data Store: Use of MongoDB for database storage.
+Standards: Web technologies including HTML, CSS, JavaScript, React.js, and Express for backend functionality.
+Platform Accessibility: Accessible via major browsers (Chrome, Firefox, Safari, etc.).
+Development Tools & Technologies
+Frontend: React.js for UI/UX design and implementation.
+Backend: Express.js as a framework for building RESTful APIs to handle data and business logic.
+Database: MongoDB as the NoSQL database for data persistence.
+Authentication: Secure user login and registration process using JWT or similar authentication methods.
+Payment Gateway: Integration for secure online payments.
+Development Milestones
+Requirement Gathering & Planning: Finalize requirements and set project timelines.
+Prototyping & Design: Develop UI prototypes and refine based on feedback.
+Development Phases (Sprints): Implement core features iteratively, including front-end (React.js) and back-end (Express & MongoDB).
+Testing & QA: Perform subsystem, integration, and acceptance testing to ensure quality.
+Final Deployment & Demonstration: Finalize and deploy the system, followed by a live demonstration.
+Conclusion
+The Cinema E-Booking System aims to provide a comprehensive and seamless experience for users to book movie tickets online, and for administrators to manage cinema operations efficiently. Combining the flexibility of Agile and structured planning of Waterfall, the project is built to be robust, secure, and user-friendly.
+
+Note: All project deliverables and deadlines are listed on the assignment page on eLC. The final project demonstration is scheduled for Tuesday, 11/30/2022.
+
+References
+MPAA-US film rating code and age-based ticket categorization.
+Secure standards for web development and user authentication practices.
+This README provides an overview of the Cinema E-Booking System project, its features, development process, and key requirements. For further details or to contribute to the project, please reach out to the project maintainers.
+
+
+
+
+
+
+
+
+
+
+
