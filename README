@@ -1,94 +1,120 @@
-Cinema E-Booking System
-Problem Statement
-The Cinema E-Booking System is a web-based application designed to facilitate online movie ticket booking, providing users with information on movies, showtimes, and allowing them to book and pay for their tickets online. The system also allows administrators to manage movies, ticket prices, and user information effectively.
+# 🎬 Cinema E-Booking System
 
-Key Features
-User Functionality:
-View Movie Information: Users can browse details for thousands of movies, including show times, trailers, synopsis, cast, and reviews.
-Online Booking & Payment: Users can select seats, book tickets for their chosen movie, and pay securely online.
-Print/Save Tickets: After payment, users can save or print their e-tickets.
-Registration & Account Management: Users can register an account, verify their email, and manage their profile and payment information.
-Search & Filter: Users can search and filter movies by category, title, or show date, with an easy booking facility available on all relevant screens.
-Order History & Refunds: Users can view their order history and request ticket returns for a refund up to 60 minutes before showtime.
-Administrator Functionality:
-Movie & Pricing Management: Admins can add, update, or delete movie details, set ticket prices by age category, and manage promotions.
-User Management: Admins can update user information, add new administrators, and suspend user accounts if necessary.
-Real-Time Statistics & Reports: Admins can view real-time booking and sales data to monitor performance.
-Age-Based Ticket Pricing:
-Child, Adult, and Senior: Ticket prices are adjusted based on the age category of the ticket owner.
-Development Process
-Process Model
-The system is developed using a hybrid process model combining Waterfall and Agile methodologies:
+## 🔗 Project Links
+- **Front-End Repository**: [Cinema E-Booking System Front-End](https://github.com/shaan101patel/FrontEndMB)
 
-Waterfall is applied for overall project planning, phase-setting, and deliverable tracking.
-Agile practices are used within each phase for flexible and iterative development, with coding divided into sprints for incremental progress.
-UI & Prototyping
-Early prototyping will be used to design and gather feedback on the UI, ensuring a user-friendly experience and reducing the risk of failure or dissatisfaction.
+## 👥 Contributors
+- Shaan
+- Jheel
+- Shruthi
+- Joey
+- Zahin
 
-Testing & Quality Assurance
-Once implemented, the system will undergo extensive testing:
+---
 
-Subsystem Testing: Validate individual components.
-Integration Testing: Ensure different parts work together seamlessly.
-Acceptance Testing: Confirm the system meets all user requirements.
-High-Level System Requirements
-Movie Management:
+## 📜 Problem Statement
 
-Admins can add/update movie details (title, category, cast, etc.) and show times.
-Admins can delete movies and manage promotional content.
-Ticket Management:
+The **Cinema E-Booking System** is a web-based application designed to facilitate online movie ticket booking, providing users with information on movies, showtimes, and allowing them to book and pay for their tickets online. The system also allows administrators to manage movies, ticket prices, and user information effectively.
 
-Age-based pricing (Child, Adult, Senior) with online booking fees and promotions.
-Users select tickets based on movie, show date, time, and seats.
-User Management:
+---
 
-Users register with personal and payment details (secured via email verification).
-Users can manage their profile, view order history, and subscribe/unsubscribe from promotions.
-Secure password recovery for registered users.
-Search & Booking:
+## 🌟 Key Features
 
-Browse Facility: Home page filters "Now Playing" and "Coming Soon" movies.
-Search & Filter: Users can search movies by category, title, and show dates.
-Seat Selection: Users can graphically select seats in the hall.
-Payment & Confirmation: Secure checkout with promotion code usage and booking confirmation sent via email.
-Reports & Analytics:
+### User Functionality
+- **View Movie Information**: Browse details for thousands of movies, including show times, trailers, synopsis, cast, and reviews.
+- **Online Booking & Payment**: Select seats, book tickets, and pay securely online.
+- **Print/Save Tickets**: After payment, save or print e-tickets.
+- **Registration & Account Management**: Register an account, verify email, and manage profile and payment information.
+- **Search & Filter**: Search and filter movies by category, title, or show date.
+- **Order History & Refunds**: View order history and request ticket returns (up to 60 minutes before showtime).
 
-Admins can generate predefined reports on sales and show statistics.
-The system supports multi-user access with appropriate authorization levels.
-Technical Specifications:
+### Administrator Functionality
+- **Movie & Pricing Management**: Add, update, or delete movie details; set ticket prices by age category; manage promotions.
+- **User Management**: Update user information, add new administrators, and suspend user accounts if necessary.
+- **Real-Time Statistics & Reports**: View booking and sales data to monitor performance.
 
-Persistent Data Store: Use of MongoDB for database storage.
-Standards: Web technologies including HTML, CSS, JavaScript, React.js, and Express for backend functionality.
-Platform Accessibility: Accessible via major browsers (Chrome, Firefox, Safari, etc.).
-Development Tools & Technologies
-Frontend: React.js for UI/UX design and implementation.
-Backend: Express.js as a framework for building RESTful APIs to handle data and business logic.
-Database: MongoDB as the NoSQL database for data persistence.
-Authentication: Secure user login and registration process using JWT or similar authentication methods.
-Payment Gateway: Integration for secure online payments.
-Development Milestones
-Requirement Gathering & Planning: Finalize requirements and set project timelines.
-Prototyping & Design: Develop UI prototypes and refine based on feedback.
-Development Phases (Sprints): Implement core features iteratively, including front-end (React.js) and back-end (Express & MongoDB).
-Testing & QA: Perform subsystem, integration, and acceptance testing to ensure quality.
-Final Deployment & Demonstration: Finalize and deploy the system, followed by a live demonstration.
-Conclusion
-The Cinema E-Booking System aims to provide a comprehensive and seamless experience for users to book movie tickets online, and for administrators to manage cinema operations efficiently. Combining the flexibility of Agile and structured planning of Waterfall, the project is built to be robust, secure, and user-friendly.
+### Age-Based Ticket Pricing
+- Ticket prices are adjusted based on **Child, Adult, and Senior** categories.
 
-Note: All project deliverables and deadlines are listed on the assignment page on eLC. The final project demonstration is scheduled for Tuesday, 11/30/2022.
+---
 
-References
-MPAA-US film rating code and age-based ticket categorization.
-Secure standards for web development and user authentication practices.
-This README provides an overview of the Cinema E-Booking System project, its features, development process, and key requirements. For further details or to contribute to the project, please reach out to the project maintainers.
+## ⚙️ Development Process
 
+### Process Model
+The system is developed using a **hybrid process model** combining **Waterfall** and **Agile** methodologies:
+- **Waterfall**: Applied for overall project planning, phase-setting, and deliverable tracking.
+- **Agile**: Practices used within each phase for flexible and iterative development with coding divided into **sprints**.
 
+### UI & Prototyping
+Early **prototyping** is used to design and gather feedback on the UI, ensuring a user-friendly experience.
 
+### Testing & Quality Assurance
+Once implemented, the system undergoes extensive testing:
+- **Subsystem Testing**: Validate individual components.
+- **Integration Testing**: Ensure seamless interactions between components.
+- **Acceptance Testing**: Confirm the system meets all user requirements.
 
+---
 
+## 🚀 High-Level System Requirements
 
+1. **Movie Management**: 
+   - Admins can add/update movie details (title, category, cast, etc.) and show times.
+   - Admins can delete movies and manage promotional content.
 
+2. **Ticket Management**: 
+   - Age-based pricing with online booking fees and promotions.
+   - Users can select tickets based on movie, show date, time, and seats.
 
+3. **User Management**: 
+   - Users register with personal and payment details, verified via email.
+   - Users can manage their profile, view order history, and subscribe/unsubscribe from promotions.
 
+4. **Search & Booking**: 
+   - **Browse Facility**: Home page displays "Now Playing" and "Coming Soon" movies.
+   - **Search & Filter**: Search movies by category, title, and show dates.
+   - **Seat Selection**: Graphical seat selection for movie halls.
+   - **Payment & Confirmation**: Secure checkout and booking confirmation sent via email.
 
+5. **Reports & Analytics**: 
+   - Admins can generate reports on sales and show statistics.
 
+6. **Technical Specifications**:
+   - **Database**: Persistent data storage using **MongoDB**.
+   - **Frontend**: Developed using **React.js**.
+   - **Backend**: Built with **Express.js** for handling APIs and business logic.
+
+---
+
+## 🛠️ Development Tools & Technologies
+- **Frontend**: [React.js](https://reactjs.org/) for UI/UX design and implementation.
+- **Backend**: [Express.js](https://expressjs.com/) framework for RESTful APIs.
+- **Database**: [MongoDB](https://www.mongodb.com/) for NoSQL data persistence.
+- **Authentication**: Secure login/registration using **JWT** or similar authentication methods.
+- **Payment Gateway**: Secure online payments.
+
+---
+
+## 📆 Development Milestones
+1. **Requirement Gathering & Planning**: Finalize requirements and project timelines.
+2. **Prototyping & Design**: Develop UI prototypes and refine based on feedback.
+3. **Development Phases (Sprints)**: Implement core features iteratively (frontend & backend).
+4. **Testing & QA**: Perform subsystem, integration, and acceptance testing.
+5. **Final Deployment & Demonstration**: Finalize, deploy, and demonstrate the system.
+
+---
+
+## 📝 Conclusion
+The **Cinema E-Booking System** aims to provide a comprehensive and seamless experience for users to book movie tickets online and for administrators to manage cinema operations efficiently. Combining the flexibility of Agile and structured planning of Waterfall, the project is built to be **robust**, **secure**, and **user-friendly**.
+
+---
+
+> **Note**: All project deliverables and deadlines are listed on the course assignment page on eLC. The final project demonstration is scheduled for **Tuesday, 11/30/2022**.
+
+## 📚 References
+- MPAA-US film rating code and age-based ticket categorization.
+- Secure standards for web development and user authentication practices.
+
+---
+
+This README provides an overview of the **Cinema E-Booking System** project, its features, development process, and key requirements. For further details or to contribute, please reach out to the project maintainers.
