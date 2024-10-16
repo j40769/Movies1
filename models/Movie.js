@@ -21,16 +21,21 @@ const movieSchema = new mongoose.Schema({
         required: true,
     },
     moviePoster: {
-        type: String, // URL for the movie poster image
+        type: String,
     },
     trailerUrl: {
-        type: String, // YouTube link for the trailer
+        type: String,
     },
     movieLength: {
-        type: String, // Movie length in format like "2h 30m"
+        type: String,
     },
     shortDescription: {
-        type: String, // Optional short description of the movie
+        type: String,
+    },
+    status: {
+        type: String,
+        enum: ['currentlyRunning', 'comingSoon'],
+        required: true,
     }
 });
 
