@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-<<<<<<< HEAD
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
 
 });
 
-const User = mongoose.model('User', userSchema);
+/* const User = mongoose.model('User', userSchema);
 module.exports = User;
 =======
 const bcrypt = require('bcrypt');
@@ -51,9 +51,8 @@ userSchema.pre('save', async function (next) {
 // Compare password
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
-};
+};*/
 
-// Create and export the User model
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;
->>>>>>> origin/master

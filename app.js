@@ -73,7 +73,7 @@ app.post('/register', async (req, res) => {
     res.status(201).send('User registered successfully, confirmation email sent');
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).send('Failed to register user');
+    res.status(500).send(`Failed to register user: ${error.message}`);
   }
 });
 
