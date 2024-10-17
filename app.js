@@ -1,3 +1,4 @@
+// Import required modules
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -6,12 +7,13 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-require('dotenv').config(); //enviroment variable
+const crypto = require('crypto'); // To generate the token
+require('dotenv').config(); // To use environment variables
 
-//express
+// Initialize express
 var app = express();
 
-
+// MongoDB connection
 const mongoDBUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/movies';
 mongoose.connect(mongoDBUri, {
   useNewUrlParser: true,
@@ -20,55 +22,61 @@ mongoose.connect(mongoDBUri, {
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('Failed to connect to MongoDB', err));
 
-
+// Middleware
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//cors (connect to frontend)
+// Enable CORS
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: 'GET,POST,PUT,DELETE',
   credentials: true
 }));
 
-
+// Routes
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-//schemas
+// Schemas
 const Movie = require('./models/Movie'); // Import Movie model
 const User = require('./models/User');   // Import User model
 
-
-//register
+// Registration endpoint
 app.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
 
   console.log("register is hit");
 
   try {
-    //user exists
+    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).send('Email is already registered');
     }
-//new user
+
+    // Create a verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
+    // Create a new user
     const newUser = new User({
       name,
       email,
-      password
+      password,
+      status: 'inactive', // User is inactive until email is verified
+      verificationToken, // Set the token for verification
+      tokenCreatedAt: Date.now() // Set the current timestamp
     });
 
     await newUser.save();
 
-    //email
-    sendConfirmationEmail(email, name);
+    // Send confirmation email
+    sendConfirmationEmail(email, name, verificationToken);
 
     res.status(201).send('User registered successfully, confirmation email sent');
   } catch (error) {
@@ -77,11 +85,39 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/Success', async (req, res) => {
+  const { token } = req.query;
+  console.log('Received token:', token); // Log the received token
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+  try {
+    // Find the user by the token
+    const user = await User.findOne({ verificationToken: token });
 
-//email being sent from
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    // Check if the user is already active
+    if (user.status === 'active') {
+      // Return a 304 Not Modified if the user is already active
+      return res.status(304).json({ message: 'User is already active.' }); // Consider using 409 for conflicts instead
+    }
+
+    // Update user status to 'active'
+    user.status = 'active';
+    await user.save();
+
+    // Send success message
+    return res.status(200).json({ message: 'User successfully verified and activated.' });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return res.status(500).json({ message: 'An error occurred while verifying your email.' });
+  }
+});
+
+
+
+// Email transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -90,16 +126,17 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-
-const sendConfirmationEmail = (userEmail, name) => {
+// Function to send confirmation email
+const sendConfirmationEmail = (userEmail, name, token) => {
+  const confirmationUrl = `http://localhost:3000/Success?token=${token}`; // Link with token
   const mailOptions = {
     from: 'cinemabookingsystem.info@gmail.com',
     to: userEmail,
-    subject: 'Confirmation For Registration',
-    text: `Hello ${name},\n\nThank you for registering! This is confirmation that you successfully registered as a user for the website.`
+    subject: 'Confirm your Registration',
+    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
   };
 
-  console.log('mail options');
+  console.log('Sending email to:', userEmail);
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
       console.error('Error sending email:', err);
@@ -109,7 +146,7 @@ const sendConfirmationEmail = (userEmail, name) => {
   });
 };
 
-//add movie to DB
+// Add movie to DB
 app.post('/add-movie', async (req, res) => {
   const { movieName, directorName, yearReleased, movieRating, moviePoster, trailerUrl, movieLength, shortDescription, status } = req.body;
 
@@ -134,7 +171,7 @@ app.post('/add-movie', async (req, res) => {
   }
 });
 
-//get movies
+// Get all movies
 app.get('/get-movies', async (req, res) => {
   try {
     const movies = await Movie.find();
@@ -148,7 +185,7 @@ app.get('/get-movies', async (req, res) => {
   }
 });
 
-//search movie w name
+// Search movie by name
 app.get('/api/movies', async (req, res) => {
   const { search } = req.query;
 
@@ -167,6 +204,7 @@ app.get('/api/movies', async (req, res) => {
   }
 });
 
+// Error handling
 app.use(function(req, res, next) {
   next(createError(404));
 });

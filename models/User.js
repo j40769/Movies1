@@ -10,12 +10,24 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    status: {
+        type: String,
+        enum: ['suspended', 'active', 'inactive'],
+        default: 'inactive' // Users start as inactive until email is verified
+    },
     password: {
         type: String,
         required: true
     },
+    verificationToken: {
+        type: String,
+        default: null // Token will be null after successful verification
+    },
+
+    tokenCreatedAt: { type: Date, default: Date.now, expires: '1h' } // Token expires in 1 hour
 
 });
+
 
 /* const User = mongoose.model('User', userSchema);
 module.exports = User;
