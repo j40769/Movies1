@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['suspended', 'active', 'inactive'],
-        default: 'inactive' // Users start as inactive until email is verified
+        default: 'inactive'
     },
     password: {
         type: String,
@@ -21,10 +21,20 @@ const userSchema = new mongoose.Schema({
     },
     verificationToken: {
         type: String,
-        default: null // Token will be null after successful verification
+        default: null
     },
 
-    tokenCreatedAt: { type: Date, default: Date.now, expires: '1h' } // Token expires in 1 hour
+    tokenCreatedAt: {
+        type: Date,
+        default: Date.now,
+        expires: '1h'
+    },
+
+    userStatus: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
+    }
 
 });
 

@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // To generate the token
+const bcrypt = require('bcrypt'); // For password hashing
 require('dotenv').config(); // To use environment variables
 
 // Initialize express
@@ -49,7 +50,7 @@ const User = require('./models/User');   // Import User model
 
 // Registration endpoint
 app.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, userStatus } = req.body;
 
   console.log("register is hit");
 
@@ -60,17 +61,23 @@ app.post('/register', async (req, res) => {
       return res.status(400).send('Email is already registered');
     }
 
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create a verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
+
+    const role = userStatus === 'admin' ? 'admin' : 'user'; // Ensure valid roles
 
     // Create a new user
     const newUser = new User({
       name,
       email,
-      password,
+      password: hashedPassword, // Store the hashed password
       status: 'inactive', // User is inactive until email is verified
       verificationToken, // Set the token for verification
-      tokenCreatedAt: Date.now() // Set the current timestamp
+      tokenCreatedAt: Date.now(), // Set the current timestamp
+      userStatus: role,
     });
 
     await newUser.save();
@@ -85,6 +92,70 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'cinemabookingsystem.info@gmail.com',
+    pass: 'duom gnax qbvr cfkj' // Ensure you use an app password for Gmail
+  }
+});
+
+// Function to send confirmation email
+const sendConfirmationEmail = (userEmail, name, token) => {
+  const confirmationUrl = `http://localhost:3000/Success?token=${token}`; // Link with token
+  const mailOptions = {
+    from: 'cinemabookingsystem.info@gmail.com',
+    to: userEmail,
+    subject: 'Confirm your Registration',
+    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
+  };
+
+  console.log('Sending email to:', userEmail);
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  }); // Make sure to close this bracket here
+} // Added closing brace for sendConfirmationEmail function
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).send('Invalid email or password'); // User not found
+    }
+
+    // Check if the password is correct
+    const isMatch = await bcrypt.compare(password, user.password); // Compare the hashed password
+
+    if (!isMatch) {
+      return res.status(401).send('Invalid email or password'); // Incorrect password
+    }
+
+    console.log("login hit");
+
+    // Check user status
+    if (user.userStatus === 'admin') {
+      return res.status(200).json({ message: 'Login successful', role: 'admin' }); // Redirect to admin page
+    } else {
+      return res.status(200).json({ message: 'Login successful', role: 'user' }); // Redirect to user page
+    }
+  } catch (error) {
+    console.error('Error during login:', error);
+    return res.status(500).send('An error occurred during login');
+  }
+});
+
+// Success endpoint for email verification
 app.get('/Success', async (req, res) => {
   const { token } = req.query;
   console.log('Received token:', token); // Log the received token
@@ -114,37 +185,6 @@ app.get('/Success', async (req, res) => {
     return res.status(500).json({ message: 'An error occurred while verifying your email.' });
   }
 });
-
-
-
-// Email transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'cinemabookingsystem.info@gmail.com',
-    pass: 'duom gnax qbvr cfkj' // Ensure you use an app password for Gmail
-  }
-});
-
-// Function to send confirmation email
-const sendConfirmationEmail = (userEmail, name, token) => {
-  const confirmationUrl = `http://localhost:3000/Success?token=${token}`; // Link with token
-  const mailOptions = {
-    from: 'cinemabookingsystem.info@gmail.com',
-    to: userEmail,
-    subject: 'Confirm your Registration',
-    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
-  };
-
-  console.log('Sending email to:', userEmail);
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error('Error sending email:', err);
-    } else {
-      console.log('Email sent:', info.response);
-    }
-  });
-};
 
 // Add movie to DB
 app.post('/add-movie', async (req, res) => {

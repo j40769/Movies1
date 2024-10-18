@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Payment = require('./Payment'); // Import the Payment schema
 
-// Define any additional fields for the Customer schema here
 const customerSchema = new mongoose.Schema({
     customerID: {
         type: String,
