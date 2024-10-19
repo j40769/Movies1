@@ -128,6 +128,100 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// GET user profile by email
+app.get('/user-profile', async (req, res) => {
+  const { email } = req.query;
+
+  // Validate email query parameter
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // Check if user was found
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Prepare user profile response excluding sensitive information
+    const userProfile = {
+      name: user.name,
+      email: user.email,
+      billingAddress: user.billingAddress,
+      city: user.city,
+      postalCode: user.postalCode,
+      country: user.country,
+      creditCards: user.creditCards,
+      promotions: user.promotions,
+    };
+
+    // Send back the user profile
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Example of an update profile endpoint
+app.post('/update-profile', async (req, res) => {
+  console.log("Update hit");
+  const {
+    name,
+    email,
+    currentPassword,
+    password,
+    confirmPassword,
+    billingAddress,
+    city,
+    postalCode,
+    country,
+    creditCards,
+    promotions
+  } = req.body;
+
+  console.log("Request body:", req.body);
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Update fields
+    if (name) user.name = name;
+    if (billingAddress) user.billingAddress = billingAddress;
+    if (city) user.city = city;
+    if (postalCode) user.postalCode = postalCode;
+    if (country) user.country = country;
+
+    // Password update logic
+    if (currentPassword && password && password === confirmPassword) {
+      const isMatch = await user.comparePassword(currentPassword);
+      if (!isMatch) {
+        return res.status(401).send('Current password is incorrect');
+      }
+      user.password = password; // Don't forget to hash the password before saving
+    }
+
+    user.creditCards = creditCards;
+    user.promotions = promotions;
+
+    await user.save();
+
+    res.status(200).send('Profile updated successfully');
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).send('Internal server error');
+  }
+});
+
+
+
 // Function to send confirmation email
 const sendConfirmationEmail = (userEmail, name, token) => {
   const confirmationUrl = `http://localhost:3000/Success?token=${token}`; // Link with token

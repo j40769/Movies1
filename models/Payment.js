@@ -27,6 +27,21 @@ const Payment = new mongoose.Schema({
         required: true,
     },
 
+    //edit profile
+    billingAddress: {
+        type: String,
+        required: false, // Ensure the billing address is required
+        unique: true, // Allow only one billing address per user
+    },
+    paymentCards: {
+        type: [String],
+        validate: [arrayLimit, 'Exceeds the limit of 4 payment cards.'], // Custom validator
+    },
+    promotionalEmails: {
+        type: Boolean,
+        default: false,
+    },
+
 
 
 });
