@@ -124,7 +124,7 @@ const sendConfirmationEmail = (userEmail, name, token) => {
 // Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
+  console.log("login is hit");
 
   try {
     // Find the user by email
@@ -141,12 +141,13 @@ app.post('/login', async (req, res) => {
       return res.status(401).send('Invalid email or password'); // Incorrect password
     }
 
-    console.log("login hit");
 
     // Check user status
     if (user.userStatus === 'admin') {
+      console.log("login admin");
       return res.status(200).json({ message: 'Login successful', role: 'admin' }); // Redirect to admin page
     } else {
+      console.log("login user");
       return res.status(200).json({ message: 'Login successful', role: 'user' }); // Redirect to user page
     }
   } catch (error) {
