@@ -48,6 +48,33 @@ app.use('/users', usersRouter);
 const Movie = require('./models/Movie'); // Import Movie model
 const User = require('./models/User');   // Import User model
 
+// Logout endpoint
+app.post('/logout', (req, res) => {
+  console.log("logout is hit");
+
+  // Check if the user is logged in (session exists)
+  if (!req.session) {
+    return res.status(400).send('No active session to log out from');
+  }
+
+  // Destroy the session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Logout failed');
+    }
+
+    // Clear the session cookie
+    res.clearCookie('connect.sid', { path: '/' });
+    console.log("Session and cookie cleared");
+
+    // Send a success message
+    return res.status(200).send('Logout successful');
+  });
+});
+
+
+
 // Registration endpoint
 app.post('/register', async (req, res) => {
   const { name, email, password, userStatus } = req.body;
