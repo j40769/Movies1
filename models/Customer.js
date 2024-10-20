@@ -23,10 +23,10 @@ const customerSchema = new mongoose.Schema({
     },
 
     state: {
-        type: String,
+        type: Number,
         required: true,
-        enum: ['Active', 'Inactive', 'Suspended'],
-        unique: true,
+        enum: [0, 1, 2], // 0: Inactive, 1: Active, 2: Suspended
+        default: 0
     },
 
     paymentMethods: {
@@ -43,6 +43,6 @@ function arrayLimit(val) {
 }
 
 // Create the Customer model as a discriminator of User
-const Customer = User.discriminator('customer', customerSchema);
+const Customer = User.discriminator('Customer', customerSchema);
 
 module.exports = Customer;

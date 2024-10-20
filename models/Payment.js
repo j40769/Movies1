@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // Create Movie Schema
-const Payment = new mongoose.Schema({
+const paymentSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
@@ -13,7 +13,7 @@ const Payment = new mongoose.Schema({
     },
 
     cardNumber: {
-        type: int,
+        type: Number,
         required: true,
     },
 
@@ -23,7 +23,7 @@ const Payment = new mongoose.Schema({
     },
 
     securityCode: {
-        type: int,
+        type: Number,
         required: true,
     },
 
@@ -46,5 +46,5 @@ const Payment = new mongoose.Schema({
 
 });
 
-const Payment = mongoose.model('Payment', Payment);
-module.exports = Movie;
+const Payment = mongoose.model('Payment', paymentSchema);
+module.exports = Payment;
