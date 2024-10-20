@@ -1,5 +1,5 @@
 // Import required modules
-var createError = require('http-errors');
+/*var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -7,9 +7,9 @@ var logger = require('morgan');
 var mongoose = require('mongoose');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-const crypto = require('crypto'); // To generate the token
-const bcrypt = require('bcrypt'); // For password hashing
-require('dotenv').config(); // To use environment variables
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
 
 // Initialize express
 var app = express();
@@ -37,81 +37,66 @@ app.use(cors({
   credentials: true
 }));
 
-// Routes
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
 // Schemas
-const Movie = require('./models/Movie'); // Import Movie model
-const User = require('./models/User');   // Import User model
+const Movie = require('./models/Movie');
+const User = require('./models/User');
 
-// Logout endpoint
-app.post('/logout', (req, res) => {
-  console.log("logout is hit");
-
-  // Check if the user is logged in (session exists)
-  if (!req.session) {
-    return res.status(400).send('No active session to log out from');
+// Email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'cinemabookingsystem.info@gmail.com',
+    pass: 'duom gnax qbvr cfkj'  // Use environment variables for security
   }
-
-  // Destroy the session
-  req.session.destroy((err) => {
-    if (err) {
-      console.error('Error destroying session:', err);
-      return res.status(500).send('Logout failed');
-    }
-
-    // Clear the session cookie
-    res.clearCookie('connect.sid', { path: '/' });
-    console.log("Session and cookie cleared");
-
-    // Send a success message
-    return res.status(200).send('Logout successful');
-  });
 });
 
+// Function to send confirmation email
+const sendConfirmationEmail = (userEmail, name, token) => {
+  const confirmationUrl = `http://localhost:3000/Success?token=${token}`;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: userEmail,
+    subject: 'Confirm your Registration',
+    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
+  };
 
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+};
 
 // Registration endpoint
 app.post('/register', async (req, res) => {
   const { name, email, password, userStatus } = req.body;
 
-  console.log("register is hit");
+  console.log("Register endpoint hit");
 
   try {
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).send('Email is already registered');
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
+    const role = userStatus === 'admin' ? 'admin' : 'user';
 
-    const role = userStatus === 'admin' ? 'admin' : 'user'; // Ensure valid roles
-
-    // Create a new user
     const newUser = new User({
       name,
       email,
-      password: hashedPassword, // Store the hashed password
-      status: 'inactive', // User is inactive until email is verified
-      verificationToken, // Set the token for verification
-      tokenCreatedAt: Date.now(), // Set the current timestamp
+      password: hashedPassword,
+      status: 'inactive',
+      verificationToken,
+      tokenCreatedAt: Date.now(),
       userStatus: role,
     });
 
     await newUser.save();
-
-    // Send confirmation email
     sendConfirmationEmail(email, name, verificationToken);
-
     res.status(201).send('User registered successfully, confirmation email sent');
   } catch (error) {
     console.error('Error registering user:', error);
@@ -119,188 +104,72 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Email transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'cinemabookingsystem.info@gmail.com',
-    pass: 'duom gnax qbvr cfkj' // Ensure you use an app password for Gmail
-  }
-});
-
-// GET user profile by email
-app.get('/user-profile', async (req, res) => {
-  const { email } = req.query;
-
-  // Validate email query parameter
-  if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
-  }
-
-  try {
-    // Find the user by email
-    const user = await User.findOne({ email });
-
-    // Check if user was found
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Prepare user profile response excluding sensitive information
-    const userProfile = {
-      name: user.name,
-      email: user.email,
-      billingAddress: user.billingAddress,
-      city: user.city,
-      postalCode: user.postalCode,
-      country: user.country,
-      creditCards: user.creditCards,
-      promotions: user.promotions,
-    };
-
-    // Send back the user profile
-    res.status(200).json(userProfile);
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Example of an update profile endpoint
-app.post('/update-profile', async (req, res) => {
-  console.log("Update hit");
-  const {
-    name,
-    email,
-    currentPassword,
-    password,
-    confirmPassword,
-    billingAddress,
-    city,
-    postalCode,
-    country,
-    creditCards,
-    promotions
-  } = req.body;
-
-  console.log("Request body:", req.body);
-
-  try {
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-
-    // Update fields
-    if (name) user.name = name;
-    if (billingAddress) user.billingAddress = billingAddress;
-    if (city) user.city = city;
-    if (postalCode) user.postalCode = postalCode;
-    if (country) user.country = country;
-
-    // Password update logic
-    if (currentPassword && password && password === confirmPassword) {
-      const isMatch = await user.comparePassword(currentPassword);
-      if (!isMatch) {
-        return res.status(401).send('Current password is incorrect');
-      }
-      user.password = password; // Don't forget to hash the password before saving
-    }
-
-    user.creditCards = creditCards;
-    user.promotions = promotions;
-
-    await user.save();
-
-    res.status(200).send('Profile updated successfully');
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    res.status(500).send('Internal server error');
-  }
-});
-
-
-
-// Function to send confirmation email
-const sendConfirmationEmail = (userEmail, name, token) => {
-  const confirmationUrl = `http://localhost:3000/Success?token=${token}`; // Link with token
-  const mailOptions = {
-    from: 'cinemabookingsystem.info@gmail.com',
-    to: userEmail,
-    subject: 'Confirm your Registration',
-    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
-  };
-
-  console.log('Sending email to:', userEmail);
-  transporter.sendMail(mailOptions, (err, info) => {
-    if (err) {
-      console.error('Error sending email:', err);
-    } else {
-      console.log('Email sent:', info.response);
-    }
-  }); // Make sure to close this bracket here
-} // Added closing brace for sendConfirmationEmail function
-
-// Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-  console.log("login is hit");
+  console.log("Login endpoint hit");
+  console.log("Login request body:", req.body); // Log the request body
 
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
+    console.log("Found user:", user); // Log the user found
 
     if (!user) {
-      return res.status(401).send('Invalid email or password'); // User not found
+      return res.status(401).send('Invalid email or password');
     }
 
-    // Check if the password is correct
-    const isMatch = await bcrypt.compare(password, user.password); // Compare the hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Stored hashed password:", user.password); // Log the hashed password
+    console.log("Password match result:", isMatch); // Log the comparison result
 
     if (!isMatch) {
-      return res.status(401).send('Invalid email or password'); // Incorrect password
+      return res.status(401).send('Invalid email or password');
     }
 
-
-    // Check user status
-    if (user.userStatus === 'admin') {
-      console.log("login admin");
-      return res.status(200).json({ message: 'Login successful', role: 'admin' }); // Redirect to admin page
-    } else {
-      console.log("login user");
-      return res.status(200).json({ message: 'Login successful', role: 'user' }); // Redirect to user page
+    if (user.status !== 'active') {
+      return res.status(403).send('User is not active. Please verify your email.');
     }
+
+    res.status(200).json({ message: 'Login successful', role: user.userStatus });
   } catch (error) {
     console.error('Error during login:', error);
     return res.status(500).send('An error occurred during login');
   }
 });
 
+
+// Logout endpoint
+app.post('/logout', (req, res) => {
+  console.log("Logout endpoint hit");
+  // Logic for logout can vary based on session management
+  // Assuming using express-session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Logout failed');
+    }
+    res.clearCookie('connect.sid', { path: '/' });
+    console.log("Session and cookie cleared");
+    return res.status(200).send('Logout successful');
+  });
+});
+
 // Success endpoint for email verification
 app.get('/Success', async (req, res) => {
   const { token } = req.query;
-  console.log('Received token:', token); // Log the received token
+  console.log('Received token for verification:', token);
 
   try {
-    // Find the user by the token
     const user = await User.findOne({ verificationToken: token });
-
     if (!user) {
       return res.status(400).json({ message: 'Invalid or expired token.' });
     }
 
-    // Check if the user is already active
     if (user.status === 'active') {
-      // Return a 304 Not Modified if the user is already active
-      return res.status(304).json({ message: 'User is already active.' }); // Consider using 409 for conflicts instead
+      return res.status(304).json({ message: 'User is already active.' });
     }
 
-    // Update user status to 'active'
     user.status = 'active';
     await user.save();
-
-    // Send success message
     return res.status(200).json({ message: 'User successfully verified and activated.' });
   } catch (error) {
     console.error('Error verifying email:', error);
@@ -328,7 +197,7 @@ app.post('/add-movie', async (req, res) => {
     await newMovie.save();
     res.status(201).send('Movie added successfully');
   } catch (error) {
-    console.error(error);
+    console.error('Error adding movie:', error);
     res.status(500).send('Failed to add movie');
   }
 });
@@ -375,7 +244,326 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.render('error');
+  res.json({ error: res.locals.message });
+});
+
+// Export the app
+module.exports = app;*/
+
+// Import required modules
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var mongoose = require('mongoose');
+const cors = require('cors');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+
+// Initialize express
+var app = express();
+
+// MongoDB connection
+const mongoDBUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/movies';
+mongoose.connect(mongoDBUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((err) => console.error('Failed to connect to MongoDB', err));
+
+// Middleware
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
+
+// Schemas
+const Movie = require('./models/Movie');
+const User = require('./models/User');
+
+// Email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'cinemabookingsystem.info@gmail.com',
+    pass: 'duom gnax qbvr cfkj'
+  }
+});
+
+// Function to send confirmation email
+const sendConfirmationEmail = (userEmail, name, token) => {
+  const confirmationUrl = `http://localhost:3000/Success?token=${token}`;
+  const mailOptions = {
+    from: 'cinemabookingsystem.info@gmail.com',
+    to: userEmail,
+    subject: 'Confirm your Registration',
+    text: `Hello ${name},\n\nThank you for registering! Please confirm your email by clicking the following link:\n\n${confirmationUrl}`
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+};
+
+// Function to send password reset email
+const sendResetPasswordEmail = (userEmail, token) => {
+  const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: userEmail,
+    subject: 'Reset your Password',
+    text: `To reset your password, please click the following link:\n\n${resetUrl}`
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error('Error sending email:', err);
+    } else {
+      console.log('Password reset email sent:', info.response);
+    }
+  });
+};
+
+// Registration endpoint
+app.post('/register', async (req, res) => {
+  const { name, email, password, userStatus } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send('Email is already registered');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const role = userStatus === 'admin' ? 'admin' : 'user';
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      status: 'inactive',
+      verificationToken,
+      tokenCreatedAt: Date.now(),
+      userStatus: role,
+    });
+
+    await newUser.save();
+    sendConfirmationEmail(email, name, verificationToken);
+    res.status(201).send('User registered successfully, confirmation email sent');
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).send(`Failed to register user: ${error.message}`);
+  }
+});
+
+// Forgot password endpoint
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetToken = resetToken;
+    user.tokenCreatedAt = Date.now();
+    await user.save();
+
+    // Construct the reset link
+    const resetLink = `http://localhost:3000/ResetPassword?token=${resetToken}`;
+
+    // Send reset password email
+    await transporter.sendMail({
+      to: email,
+      subject: 'Password Reset',
+      text: `Click here to reset your password: ${resetLink}`
+    });
+
+    res.status(200).send('Password reset email sent');
+  } catch (error) {
+    console.error('Error in forgot password:', error);
+    res.status(500).send('Failed to send reset password email');
+  }
+});
+
+// Route to reset password by email
+app.post('/reset-password', async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email);
+
+  try {
+    // Check if user exists by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Login endpoint
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).send('Invalid email or password');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).send('Invalid email or password');
+    }
+
+    if (user.status !== 'active') {
+      return res.status(403).send('User is not active. Please verify your email.');
+    }
+
+    res.status(200).json({ message: 'Login successful', role: user.userStatus });
+  } catch (error) {
+    console.error('Error during login:', error);
+    return res.status(500).send('An error occurred during login');
+  }
+});
+
+// Logout endpoint
+app.post('/logout', (req, res) => {
+  // Logic for logout can vary based on session management
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Logout failed');
+    }
+    res.clearCookie('connect.sid', { path: '/' });
+    return res.status(200).send('Logout successful');
+  });
+});
+
+// Success endpoint for email verification
+app.get('/Success', async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    const user = await User.findOne({ verificationToken: token });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    if (user.status === 'active') {
+      return res.status(304).json({ message: 'User is already active.' });
+    }
+
+    user.status = 'active';
+    await user.save();
+    return res.status(200).json({ message: 'User successfully verified and activated.' });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return res.status(500).json({ message: 'An error occurred while verifying your email.' });
+  }
+});
+
+// Add movie to DB
+app.post('/add-movie', async (req, res) => {
+  const { movieName, directorName, yearReleased, movieRating, moviePoster, trailerUrl, movieLength, shortDescription, status } = req.body;
+
+  try {
+    const newMovie = new Movie({
+      movieName,
+      directorName,
+      yearReleased,
+      movieRating,
+      moviePoster,
+      trailerUrl,
+      movieLength,
+      shortDescription,
+      status
+    });
+
+    await newMovie.save();
+    res.status(201).send('Movie added successfully');
+  } catch (error) {
+    console.error('Error adding movie:', error);
+    res.status(500).send('Failed to add movie');
+  }
+});
+
+// Get all movies
+app.get('/get-movies', async (req, res) => {
+  try {
+    const movies = await Movie.find();
+    const currentlyRunning = movies.filter(movie => movie.status === 'currentlyRunning');
+    const comingSoon = movies.filter(movie => movie.status === 'comingSoon');
+
+    res.json({ currentlyRunning, comingSoon });
+  } catch (error) {
+    console.error('Error retrieving movies:', error);
+    res.status(500).send('Failed to retrieve movies');
+  }
+});
+
+// Search movie by name
+app.get('/api/movies', async (req, res) => {
+  const { search } = req.query;
+
+  if (!search) {
+    return res.status(400).send('Search query is required');
+  }
+
+  try {
+    const movies = await Movie.find({
+      movieName: { $regex: search, $options: 'i' }
+    });
+    res.json(movies);
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    res.status(500).send('Failed to search movies');
+  }
+});
+
+// Error handling
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+app.use(function(err, req, res, next) {
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.status(err.status || 500);
+  res.json({ error: res.locals.message });
 });
 
 // Export the app
