@@ -389,16 +389,17 @@ app.post('/register', async (req, res) => {
       postalCode,
       country,
       creditCardNumber: Array.isArray(creditCardNumber) ? creditCardNumber.slice(0, 3) : [], // Safely handle undefined
-      expiryDate: Array.isArray(expiryDate) ? expiryDate.slice(0, 3) : [], // Safely handle undefined
+      expiryDate: Array.isArray(expiryDate) ? expiryDate.slice(0, 3) : [' '], // Safely handle undefined
       cvv: Array.isArray(cvv) ? cvv.slice(0, 3) : [], // Safely handle undefined
       promotionOptIn,
     });
 
+    console.log(user);
+    
     // Save the user to the database
     await user.save();
-
-    // Generate a token (for email confirmation)
     
+    console.log(user);
 
     // Send the confirmation email
     sendConfirmationEmail(email, name, verificationToken);
@@ -419,7 +420,7 @@ app.post('/update-profile', async (req, res) => {
     billingAddress,
     city,
     postalCode,
-    country,
+    state,
     creditCardNumber,
     expiryDate,
     cvv,
@@ -434,7 +435,7 @@ app.post('/update-profile', async (req, res) => {
           billingAddress,
           city,
           postalCode,
-          country,
+          state,
           creditCardNumber,
           expiryDate,
           cvv,
@@ -576,7 +577,7 @@ app.get('/user-profile', async (req, res) => {
       billingAddress: user.billingAddress,
       city: user.city,
       postalCode: user.postalCode,
-      country: user.country,
+      state: user.state,
       creditCards: user.creditCardNumber.map((card, index) => ({
         cardNumber: card,
         expiryDate: user.expiryDate[index],
@@ -613,7 +614,7 @@ app.post('/update-profile', async (req, res) => {
           billingAddress,
           city,
           postalCode,
-          country,
+          state,
           creditCardNumber,
           expiryDate,
           cvv,
@@ -634,7 +635,7 @@ app.post('/update-profile', async (req, res) => {
       billingAddress: updatedUser.billingAddress,
       city: updatedUser.city,
       postalCode: updatedUser.postalCode,
-      country: updatedUser.country,
+      state: updatedUser.state,
       creditCards: updatedUser.creditCardNumber.map((card, index) => ({
         cardNumber: card,
         expiryDate: updatedUser.expiryDate[index],
