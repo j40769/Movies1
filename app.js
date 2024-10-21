@@ -340,36 +340,117 @@ const sendResetPasswordEmail = (userEmail, token) => {
   });
 };
 
-// Registration endpoint
+
 app.post('/register', async (req, res) => {
-  const { name, email, password, userStatus } = req.body;
+  console.log(req.body);
+  
+  const {
+    name,
+    email,
+    password,
+    userStatus,
+    billingAddress,
+    city,
+    postalCode,
+    country,
+    creditCardNumber, // Expecting an array
+    expiryDate,      // Expecting an array
+    cvv,             // Expecting an array
+    promotionOptIn
+  } = req.body;
+
+  // Basic validation
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Please fill out all required fields.' });
+  }
 
   try {
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).send('Email is already registered');
+      return res.status(400).json({ message: 'User already exists.' });
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const role = userStatus === 'admin' ? 'admin' : 'user';
 
-    const newUser = new User({
+    // Create new user
+    const user = new User({
       name,
       email,
       password: hashedPassword,
-      status: 'inactive',
       verificationToken,
       tokenCreatedAt: Date.now(),
       userStatus: role,
+      billingAddress,
+      city,
+      postalCode,
+      country,
+      creditCardNumber: Array.isArray(creditCardNumber) ? creditCardNumber.slice(0, 3) : [], // Safely handle undefined
+      expiryDate: Array.isArray(expiryDate) ? expiryDate.slice(0, 3) : [], // Safely handle undefined
+      cvv: Array.isArray(cvv) ? cvv.slice(0, 3) : [], // Safely handle undefined
+      promotionOptIn,
     });
 
-    await newUser.save();
+    // Save the user to the database
+    await user.save();
+
+    // Generate a token (for email confirmation)
+    
+
+    // Send the confirmation email
     sendConfirmationEmail(email, name, verificationToken);
-    res.status(201).send('User registered successfully, confirmation email sent');
+
+    // Respond with success
+    res.status(201).json({ message: 'User registered successfully! A confirmation email has been sent.' });
   } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).send(`Failed to register user: ${error.message}`);
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+// Update Profile endpoint
+app.post('/update-profile', async (req, res) => {
+  const {
+    email,
+    name,
+    billingAddress,
+    city,
+    postalCode,
+    country,
+    creditCardNumber,
+    expiryDate,
+    cvv,
+    promotionOptIn
+  } = req.body;
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+        { email }, // Assuming email is used to identify the user
+        {
+          name,
+          billingAddress,
+          city,
+          postalCode,
+          country,
+          creditCardNumber,
+          expiryDate,
+          cvv,
+          promotionOptIn
+        },
+        { new: true } // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send('Profile updated successfully');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).send(`Failed to update profile: ${error.message}`);
   }
 });
 
@@ -473,9 +554,107 @@ app.post('/logout', (req, res) => {
   });
 });
 
+
+// GET user profile by email
+app.get('/user-profile', async (req, res) => {
+  const { email } = req.query;
+  // Validate email query parameter
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+    // Check if user was found
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userProfile = {
+      name: user.name,
+      email: user.email,
+      billingAddress: user.billingAddress,
+      city: user.city,
+      postalCode: user.postalCode,
+      country: user.country,
+      creditCards: user.creditCardNumber.map((card, index) => ({
+        cardNumber: card,
+        expiryDate: user.expiryDate[index],
+        cvv: user.cvv[index]
+      })),
+      promotionOptIn: user.promotionOptIn
+    };
+
+    // Send back the user profile
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+app.post('/update-profile', async (req, res) => {
+  console.log("Update hit");
+  const { userId, name, email, billingAddress, city, postalCode, country, creditCardNumber, expiryDate, cvv, promotionOptIn } = req.body;
+
+  try {
+    // Validate user input (you might want to add more validation here)
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required.' });
+    }
+
+    // Find the user by ID and update the fields
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          name,
+          email,
+          billingAddress,
+          city,
+          postalCode,
+          country,
+          creditCardNumber,
+          expiryDate,
+          cvv,
+          promotionOptIn
+        },
+        { new: true, runValidators: true } // Options to return the updated document and run validators
+    );
+
+    // Check if the user was found and updated
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Prepare the response (exclude sensitive information if needed)
+    const userProfile = {
+      name: updatedUser.name,
+      email: updatedUser.email,
+      billingAddress: updatedUser.billingAddress,
+      city: updatedUser.city,
+      postalCode: updatedUser.postalCode,
+      country: updatedUser.country,
+      creditCards: updatedUser.creditCardNumber.map((card, index) => ({
+        cardNumber: card,
+        expiryDate: updatedUser.expiryDate[index],
+        cvv: updatedUser.cvv[index]
+      })),
+      promotionOptIn: updatedUser.promotionOptIn
+    };
+
+    // Send response
+    res.json(userProfile);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: 'An error occurred while updating the profile.', error: error.message });
+  }
+});
+
 // Success endpoint for email verification
 app.get('/Success', async (req, res) => {
   const { token } = req.query;
+  console.log('Received token for verification:', token);
 
   try {
     const user = await User.findOne({ verificationToken: token });
