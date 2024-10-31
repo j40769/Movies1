@@ -40,6 +40,7 @@ app.use(cors({
 // Schemas
 const Movie = require('./models/Movie');
 const User = require('./models/User');
+const Promotion = require('./models/Promotion')
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -170,77 +171,58 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
-/*app.post('/register', async (req, res) => {
+// Endpoint to add a new promotion
+app.post('/api/promotions/add', async (req, res) => {
+  const { title, discount, validUntil } = req.body;
   console.log(req.body);
-
-  const {
-    name,
-    email,
-    password,
-    userStatus,
-    billingAddress,
-    city,
-    postalCode,
-    country,
-    creditCardNumber, // Expecting an array
-    expiryDate,// Expecting an array
-    cvv,// Expecting an array
-    promotionOptIn
-  } = req.body;
-
-  // Basic validation
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: 'Please fill out all required fields.' });
-  }
+  
 
   try {
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists.' });
-    }
+    const newPromotion = new Promotion({ title, discount, validUntil });
+    await newPromotion.save();
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const role = userStatus === 'admin' ? 'admin' : 'user';
+    // Find users opted into promotions
+    const optedInUsers = await User.find({ promotionOptIn: true });
 
-    // Create new user
-    const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      verificationToken,
-      tokenCreatedAt: Date.now(),
-      userStatus: role,
-      billingAddress,
-      city,
-      postalCode,
-      country,
-      creditCardNumber: Array.isArray(creditCardNumber) ? creditCardNumber.slice(0, 3) : [], // Safely handle undefined
-      expiryDate: Array.isArray(expiryDate) ? expiryDate.slice(0, 3) : [' '], // Safely handle undefined
-      cvv: Array.isArray(cvv) ? cvv.slice(0, 3) : [], // Safely handle undefined
-      promotionOptIn,
+    console.log(optedInUsers);
+    
+    // Send email notification to each opted-in user
+    optedInUsers.forEach((user) => {
+      const mailOptions = {
+        from: 'your-email@gmail.com',
+        to: user.email,
+        subject: 'New Promotion Alert!',
+        text: `Hello ${user.name},\n\nA new promotion has been added: ${title} with a discount of ${discount}, valid until ${validUntil}. Check it out!`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log(`Email sent to ${user.email}:`, info.response);
+        }
+      });
     });
 
-    console.log(user);
-
-    // Save the user to the database
-    await user.save();
-
-    console.log(user);
-
-    // Send the confirmation email
-    sendConfirmationEmail(email, name, verificationToken);
-
-    // Respond with success
-    res.status(201).json({ message: 'User registered successfully! A confirmation email has been sent.' });
+    res.status(201).send('Promotion added and emails sent to opted-in users');
   } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    console.error('Error adding promotion:', error);
+    res.status(500).send('Failed to add promotion');
   }
-});*/
+});
+
+// Route to update promotion opt-in status
+app.post('/api/users/promotion-optin', async (req, res) => {
+  const { userId, optIn } = req.body;
+
+  try {
+    await User.findByIdAndUpdate(userId, { promotionOptIn: optIn });
+    res.status(200).send(`Promotion opt-in status updated to ${optIn}`);
+  } catch (error) {
+    console.error('Error updating promotion opt-in status:', error);
+    res.status(500).send('Failed to update promotion opt-in status');
+  }
+});
 
 // Update Profile endpoint
 app.post('/update-profile', async (req, res) => {
@@ -278,12 +260,23 @@ app.post('/update-profile', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
+    await sendConfirmationEmaill(email, name);
+
     res.status(200).send('Profile updated successfully');
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).send(`Failed to update profile: ${error.message}`);
   }
 });
+
+const sendConfirmationEmaill = async (userEmail, name) => {
+  const mailOptions = {
+    from: 'cinemabookingsystem.info@gmail.com',
+    to: userEmail,
+    subject: 'Confirm your Registration',
+    text: `Hello ${name},\n\nThank you for registering! Please confirm your email.`
+  };
+}
 
 // Forgot password endpoint
 app.post('/forgot-password', async (req, res) => {

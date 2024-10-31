@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
     }],
     promotionOptIn: {
         type: Boolean,
-        default: false
+        default: true
     }
 });
 
