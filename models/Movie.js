@@ -35,6 +35,18 @@ const movieSchema = new mongoose.Schema({
         type: String,
         enum: ['currentlyRunning', 'comingSoon'],
         required: true,
+    },
+    showDates: {
+        type: [Date], // Array of dates
+        required: true,
+    },
+    showTimes: {
+        type: [String], // Array of strings (e.g., ["2:00 PM", "6:00 PM"])
+        required: true,
+    },
+    genre: { // New genre field
+        type: String,
+        required: true
     }
 });
 

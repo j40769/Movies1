@@ -499,9 +499,21 @@ app.get('/Success', async (req, res) => {
   }
 });
 
-// Add movie to DB
 app.post('/add-movie', async (req, res) => {
-  const { movieName, directorName, yearReleased, movieRating, moviePoster, trailerUrl, movieLength, shortDescription, status } = req.body;
+  const {
+    movieName,
+    directorName,
+    yearReleased,
+    movieRating,
+    moviePoster,
+    trailerUrl,
+    movieLength,
+    shortDescription,
+    status,
+    showDates,
+    showTimes,
+    genre // New field
+  } = req.body;
 
   try {
     const newMovie = new Movie({
@@ -513,7 +525,10 @@ app.post('/add-movie', async (req, res) => {
       trailerUrl,
       movieLength,
       shortDescription,
-      status
+      status,
+      showDates,
+      showTimes,
+      genre // Save genre
     });
 
     await newMovie.save();
@@ -523,6 +538,8 @@ app.post('/add-movie', async (req, res) => {
     res.status(500).send('Failed to add movie');
   }
 });
+
+
 
 // Get all movies
 app.get('/get-movies', async (req, res) => {
@@ -539,7 +556,7 @@ app.get('/get-movies', async (req, res) => {
 });
 
 // Search movie by name
-app.get('/api/movies', async (req, res) => {
+/*app.get('/api/movies', async (req, res) => {
   const { search } = req.query;
 
   if (!search) {
@@ -567,7 +584,45 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
   res.json({ error: res.locals.message });
+});*/
+
+app.get('/api/movies', async (req, res) => {
+  const { search } = req.query;
+
+  // Check if search query is provided
+  if (!search) {
+    return res.status(400).send('Search query is required');
+  }
+
+  try {
+    const regex = new RegExp(search, 'i'); // Create a case-insensitive regex for search
+    // Search for movies by movieName or genre
+    const movies = await Movie.find({
+      $or: [
+        { movieName: { $regex: regex } },
+        { genre: { $regex: regex } }
+      ]
+    });
+
+    res.json(movies);
+  } catch (error) {
+    console.error('Error searching movies:', error);
+    res.status(500).send('Failed to search movies');
+  }
 });
+
+// Error handling middleware
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+app.use(function(err, req, res, next) {
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.status(err.status || 500);
+  res.json({ error: res.locals.message });
+});
+
 
 // Export the app
 module.exports = app;
