@@ -41,6 +41,7 @@ app.use(cors({
 const Movie = require('./models/Movie');
 const User = require('./models/User');
 const Promotion = require('./models/Promotion')
+const Ticket = require('./models/Ticket')
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -168,6 +169,28 @@ app.post('/register', async (req, res) => {
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'Internal server error.' });
+  }
+});
+
+// Ticket Purchase Endpoint
+app.post('/api/tickets/purchase', async (req, res) => {
+  const { movieId, showtime, seats, ages } = req.body;
+
+  try {
+    // Save the ticket purchase details in the database
+    const newTicket = new Ticket({
+      movieId,
+      showtime,
+      seats,
+      ages,
+    });
+
+    await newTicket.save();
+
+    res.status(201).json({ message: 'Tickets purchased successfully!' });
+  } catch (error) {
+    console.error('Error purchasing tickets:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -586,6 +609,24 @@ app.use(function(err, req, res, next) {
   res.json({ error: res.locals.message });
 });*/
 
+const { ObjectId } = require('mongodb'); // Ensure ObjectId is imported
+
+app.get('/api/movies/:id', async (req, res) => {
+  try {
+    console.log("hello");
+    const movie = await Movie.findById(req.params.id);
+    if (!movie) {
+      return res.status(404).send('Movie not found');
+    }
+    res.json(movie);
+  } catch (err) {
+    console.error('Error fetching movie:', err);
+    res.status(500).send('Error fetching movie');
+  }
+});
+
+
+
 app.get('/api/movies', async (req, res) => {
   const { search } = req.query;
 
@@ -626,3 +667,6 @@ app.use(function(err, req, res, next) {
 
 // Export the app
 module.exports = app;
+
+
+
