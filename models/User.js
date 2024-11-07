@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     tokenCreatedAt: {
         type: Date,
         default: Date.now,
-        expires: '1h'
+        //expires: '1h'
     },
     userStatus: {
         type: String,
@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    creditCardNumber: [{
+    /*creditCardNumber: [{
         type: String,
         default: ''
     }],
@@ -62,6 +62,18 @@ const userSchema = new mongoose.Schema({
     cvv: [{
         type: String,
         default: ''
+    }],*/
+    creditCardNumber: [{
+        encryptedData: { type: String },
+        iv: { type: String }
+    }],
+    expiryDate: [{
+        encryptedData: { type: String },
+        iv: { type: String }
+    }],
+    cvv: [{
+        encryptedData: { type: String },
+        iv: { type: String }
     }],
     promotionOptIn: {
         type: Boolean,
