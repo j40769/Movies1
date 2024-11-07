@@ -42,6 +42,7 @@ const Movie = require('./models/Movie');
 const User = require('./models/User');
 const Promotion = require('./models/Promotion')
 const Ticket = require('./models/Ticket')
+const Booking = require('./models/Booking')
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -209,6 +210,32 @@ app.post('/api/tickets/purchase', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+// Route to create a new booking
+app.post('/api/bookings', async (req, res) => {
+  const { movieName, selectedDate, selectedTime, selectedSeats, ageCategories } = req.body;
+
+  try {
+    // Create a new booking document
+    const booking = new Booking({
+      movieName,
+      selectedDate,
+      selectedTime,
+      selectedSeats,
+      ageCategories,
+    });
+
+    // Save the booking to the database
+    await booking.save();
+
+    // Send the response with the booking ID
+    res.status(201).json({ success: true, bookingId: booking._id });
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    res.status(500).json({ success: false, message: 'Booking creation failed' });
+  }
+});
+
 
 // Endpoint to add a new promotion
 app.post('/api/promotions/add', async (req, res) => {
