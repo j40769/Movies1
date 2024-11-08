@@ -91,6 +91,54 @@ const sendResetPasswordEmail = (userEmail, token) => {
   });
 };
 
+// Function to send order confirmation email
+const sendOrderConfirmationEmail = async (orderData) => {
+  const { userEmail, userName, order, orderTotal, movieDate, movieTime } = orderData;
+
+  const emailBody = `
+        Hello ${userName},
+
+        Thank you for your purchase! Your order has been successfully placed.
+
+        Order Summary:
+        ${order.map(({ seat, age }) => `Seat: ${seat} (Age: ${age})`).join('\n')}
+        
+        Total Price: $${orderTotal.toFixed(2)}
+        Movie Date: ${movieDate}
+        Movie Time: ${movieTime}
+
+        Enjoy your movie!
+
+        Regards,
+        Cinema Booking System
+    `;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: userEmail,
+    subject: 'Your Movie Ticket Confirmation',
+    text: emailBody
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Order confirmation email sent successfully');
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    throw new Error('Failed to send confirmation email');
+  }
+};
+
+// API route to handle email sending
+app.post('/send-confirmation-email', async (req, res) => {
+  try {
+    await sendOrderConfirmationEmail(req.body);
+    res.status(200).json({ message: 'Confirmation email sent successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 function encrypt(text) {
   const algorithm = 'aes-256-cbc';
   const secretKey = 'your-secret-key';  // Replace with your real secret key
