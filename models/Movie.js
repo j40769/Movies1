@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Showroom = require('./Showroom');
 
 const movieSchema = new mongoose.Schema({
     movieName: {
@@ -18,6 +19,10 @@ const movieSchema = new mongoose.Schema({
         min: 0,
         max: 10,
         required: true,
+    },
+    showRoom: {
+        type: String,
+        default: 'Showroom A', // Default value set to "Showroom A"
     },
     moviePoster: {
         type: String,

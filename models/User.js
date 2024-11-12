@@ -27,7 +27,6 @@ const userSchema = new mongoose.Schema({
     tokenCreatedAt: {
         type: Date,
         default: Date.now,
-        //expires: '1h'
     },
     userStatus: {
         type: String,
@@ -51,18 +50,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    /*creditCardNumber: [{
-        type: String,
-        default: ''
-    }],
-    expiryDate: [{
-        type: String,
-        default: ''
-    }],
-    cvv: [{
-        type: String,
-        default: ''
-    }],*/
     creditCardNumber: [{
         encryptedData: { type: String },
         iv: { type: String }
