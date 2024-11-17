@@ -38,19 +38,18 @@ const sendResetPasswordEmail = (userEmail, token) => {
 };
 
 
-const sendOrderConfirmationEmail = async ({ userEmail, userName, order, orderTotal, movieDate, movieTime }) => {
-    console.log("i am here");
+const sendOrderConfirmationEmail = async ({ userEmail, userName, order, orderTotal, movieDate, movieTime, movieName }) => {
     console.log(userEmail);
-    console.log("hi");
-    
+
     const emailBody = `
-        Hello ${userName},
+        Hello,
 
         Thank you for your purchase! Your order has been successfully placed.
 
         Order Summary:
         ${order.map(({ seat, age }) => `Seat: ${seat} (Age: ${age})`).join('\n')}
         
+        Movie Name: ${movieName}
         Total Price: $${orderTotal.toFixed(2)}
         Movie Date: ${movieDate}
         Movie Time: ${movieTime}

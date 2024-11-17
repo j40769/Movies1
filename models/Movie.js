@@ -42,7 +42,7 @@ const movieSchema = new mongoose.Schema({
         required: true,
     },
     showDates: {
-        type: [Date], // Array of dates
+        type: [String], // Array of dates
         required: true,
     },
     showTimes: {

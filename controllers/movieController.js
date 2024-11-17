@@ -49,8 +49,13 @@ exports.addMovie = async (req, res) => {
 
     try {
         // Format showDates as Date objects
-        const formattedShowDates = showDates.map(date => new Date(date));
-
+        const formattedShowDates = showDates.map(date => {
+            const d = new Date(date);
+            const formattedDate = d.toISOString().split('T')[0]; // Extract 'YYYY-MM-DD'
+            console.log(`Formatted showDate: ${formattedDate}`);
+            return formattedDate;
+        });
+        
         const newMovie = new Movie({
             movieName,
             directorName,
