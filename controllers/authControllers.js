@@ -216,12 +216,12 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.addPromotion = async (req, res) => {
-    const { title, discount, validUntil } = req.body;
+    const { title, discount, code, validUntil } = req.body;
     console.log(req.body);
 
 
     try {
-        const newPromotion = new Promotion({ title, discount, validUntil });
+        const newPromotion = new Promotion({ title, discount, code, validUntil });
         await newPromotion.save();
 
         // Find users opted into promotions
@@ -235,7 +235,7 @@ exports.addPromotion = async (req, res) => {
                 from: 'your-email@gmail.com',
                 to: user.email,
                 subject: 'New Promotion Alert!',
-                text: `Hello ${user.name},\n\nA new promotion has been added: ${title} with a discount of ${discount}, valid until ${validUntil}. Check it out!`,
+                text: `Hello ${user.name},\n\nA new promotion has been added: ${title} with a discount of ${discount}, with a code of ${code}, valid until ${validUntil}. Check it out!`,
             };
 
             transporter.sendMail(mailOptions, (error, info) => {

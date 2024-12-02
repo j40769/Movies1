@@ -10,6 +10,11 @@ const promotionSchema = new mongoose.Schema({
         type: Number,
         required: true, // Make discount required
     },
+    code: {
+        type: String,
+        required: true, // Make code required
+        unique: true, // Ensure each code is unique
+    },
     validUntil: {
         type: Date,
         required: true, // Make validUntil required
