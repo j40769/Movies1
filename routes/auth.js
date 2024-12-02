@@ -10,6 +10,8 @@ router.post('/send-confirmation-email', authController.sendOrderConfirmationEmai
 
 router.post('/api/promotions/add', authController.addPromotion);
 
+router.get('/api/promotions', authController.getPromotions);
+
 // Forgot Password Route
 router.post('/forgot-password', authController.forgotPassword);
 

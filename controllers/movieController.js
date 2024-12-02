@@ -30,7 +30,7 @@ exports.getMovieById = async (req, res) => {
 };
 
 // Add a new movie
-exports.addMovie = async (req, res) => {
+/*exports.addMovie = async (req, res) => {
     const {
         movieName,
         directorName,
@@ -78,7 +78,73 @@ exports.addMovie = async (req, res) => {
         console.error('Error adding movie:', error);
         res.status(500).json({ message: 'Error adding movie', error: error.message });
     }
+};*/
+
+// Add a new movie
+exports.addMovie = async (req, res) => {
+    const {
+        movieName,
+        directorName,
+        yearReleased,
+        movieRating,
+        showRoom,
+        moviePoster,
+        trailerUrl,
+        movieLength,
+        shortDescription,
+        status,
+        showDates,
+        showTimes,
+        genre
+    } = req.body;
+
+    try {
+        // Format showDates as Date objects
+        const formattedShowDates = showDates.map(date => {
+            const d = new Date(date);
+            const formattedDate = d.toISOString().split('T')[0]; // Extract 'YYYY-MM-DD'
+            console.log(`Formatted showDate: ${formattedDate}`);
+            return formattedDate;
+        });
+
+        // Check for existing movie conflicts
+        const conflictingMovie = await Movie.findOne({
+            showRoom,
+            showDates: { $in: formattedShowDates }, // Check if any date overlaps
+            showTimes: { $in: showTimes }           // Check if any time overlaps
+        });
+
+        if (conflictingMovie) {
+            return res.status(400).json({
+                message: `A movie is already scheduled in showroom "${showRoom}" for the provided dates and times. Conflict with movie: "${conflictingMovie.movieName}".`
+            });
+        }
+
+        // Create new movie object
+        const newMovie = new Movie({
+            movieName,
+            directorName,
+            yearReleased,
+            movieRating,
+            showRoom,
+            moviePoster,
+            trailerUrl,
+            movieLength,
+            shortDescription,
+            status,
+            showDates: formattedShowDates,
+            showTimes,
+            genre
+        });
+
+        await newMovie.save();
+        res.status(201).json({ message: 'Movie added successfully', movie: newMovie });
+    } catch (error) {
+        console.error('Error adding movie:', error);
+        res.status(500).json({ message: 'Error adding movie', error: error.message });
+    }
 };
+
 
 // Search for movies by name or genre
 exports.searchMovies = async (req, res) => {

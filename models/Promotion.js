@@ -7,7 +7,7 @@ const promotionSchema = new mongoose.Schema({
         required: true, // Make title required
     },
     discount: {
-        type: String,
+        type: Number,
         required: true, // Make discount required
     },
     validUntil: {

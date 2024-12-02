@@ -254,6 +254,25 @@ exports.addPromotion = async (req, res) => {
     }
 };
 
+// Get Promotions Function
+exports.getPromotions = async (req, res) => {
+    try {
+        // Fetch all promotions from the database
+        const promotions = await Promotion.find();
+
+        // If no promotions are found
+        if (!promotions || promotions.length === 0) {
+            return res.status(404).send('No promotions found.');
+        }
+
+        // Send promotions as a response
+        res.status(200).json(promotions);
+    } catch (error) {
+        console.error('Error fetching promotions:', error);
+        res.status(500).send('Failed to fetch promotions');
+    }
+};
+
 
 // Login Function
 exports.loginUser = async (req, res) => {
