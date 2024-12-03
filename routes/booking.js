@@ -12,5 +12,7 @@ router.post('/showrooms', bookingController.createShowroom);
 
 router.get('/fetchBooking', bookingController.getBookedSeats);
 
+router.get('/api/bookings', bookingController.getBookingsByEmail);
+
 
 module.exports = router;

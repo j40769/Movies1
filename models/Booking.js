@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 
 // Define the Booking schema
 const bookingSchema = new mongoose.Schema({
+    email: {
+        type: String,
+        required: true
+    },
     movieName: {
         type: String,
         required: true

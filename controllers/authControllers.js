@@ -235,7 +235,7 @@ exports.addPromotion = async (req, res) => {
                 from: 'your-email@gmail.com',
                 to: user.email,
                 subject: 'New Promotion Alert!',
-                text: `Hello ${user.name},\n\nA new promotion has been added: ${title} with a discount of ${discount}, with a code of ${code}, valid until ${validUntil}. Check it out!`,
+                text: `Hello ${user.name},\n\nA new promotion has been added: ${title} with a discount of ${discount}%, with a code of ${code}, valid until ${validUntil}. Check it out!`,
             };
 
             transporter.sendMail(mailOptions, (error, info) => {
