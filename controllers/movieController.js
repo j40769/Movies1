@@ -121,11 +121,10 @@ exports.searchMovies = async (req, res) => {
 
 // movieController.js
 
-const Movie = require('../models/Movie');
+/*const Movie = require('../models/Movie');
 const { ObjectId } = require('mongodb');
 
 class MovieController {
-    // Private static instance variable
     static #instance;
 
     // Private constructor to prevent direct instantiation
@@ -135,7 +134,7 @@ class MovieController {
         }
     }
 
-    // Public static method to get the single instance
+    //get the single instance
     static getInstance() {
         if (!MovieController.#instance) {
             MovieController.#instance = new MovieController();
@@ -258,5 +257,143 @@ class MovieController {
     }
 }
 
+module.exports = MovieController.getInstance();*/
+
+const Movie = require('../models/Movie');
+const { ObjectId } = require('mongodb');
+
+class MovieController {
+    static #instance;
+
+    // Private constructor to prevent direct instantiation
+    constructor() {
+        if (MovieController.#instance) {
+            throw new Error('Use MovieController.getInstance() to get the single instance of this class.');
+        }
+    }
+
+    // Get the single instance
+    static getInstance() {
+        if (!MovieController.#instance) {
+            MovieController.#instance = new MovieController();
+        }
+        return MovieController.#instance;
+    }
+
+    // Simplified interface for getting categorized movies
+    async getCategorizedMovies() {
+        try {
+            const movies = await this.getMovies(); // Reuse the original getMovies method
+            const categorizedMovies = {
+                currentlyRunning: movies.filter(movie => movie.status === 'currentlyRunning'),
+                comingSoon: movies.filter(movie => movie.status === 'comingSoon')
+            };
+            return categorizedMovies;
+        } catch (error) {
+            throw new Error('Failed to retrieve categorized movies');
+        }
+    }
+
+    // Simplified method to get a single movie by ID
+    async getMovieById(id) {
+        try {
+            const movie = await Movie.findById(id);
+            if (!movie) {
+                throw new Error('Movie not found');
+            }
+            return movie;
+        } catch (error) {
+            throw new Error('Error fetching movie');
+        }
+    }
+
+    // Simplified method to add a new movie
+    async addNewMovie(movieData) {
+        const {
+            movieName,
+            directorName,
+            yearReleased,
+            movieRating,
+            showRoom,
+            moviePoster,
+            trailerUrl,
+            movieLength,
+            shortDescription,
+            status,
+            showDates,
+            showTimes,
+            genre
+        } = movieData;
+
+        try {
+            const formattedShowDates = showDates.map(date => {
+                const d = new Date(date);
+                return d.toISOString().split('T')[0];
+            });
+
+            const conflictingMovie = await Movie.findOne({
+                showRoom,
+                showDates: { $in: formattedShowDates },
+                showTimes: { $in: showTimes }
+            });
+
+            if (conflictingMovie) {
+                throw new Error(`A movie is already scheduled in showroom "${showRoom}" for the provided dates and times.`);
+            }
+
+            const newMovie = new Movie({
+                movieName,
+                directorName,
+                yearReleased,
+                movieRating,
+                showRoom,
+                moviePoster,
+                trailerUrl,
+                movieLength,
+                shortDescription,
+                status,
+                showDates: formattedShowDates,
+                showTimes,
+                genre
+            });
+
+            await newMovie.save();
+            return { message: 'Movie added successfully', movie: newMovie };
+        } catch (error) {
+            throw new Error(`Failed to add movie: ${error.message}`);
+        }
+    }
+
+    // Simplified method to search movies by name or genre
+    async searchMovies(searchQuery) {
+        if (!searchQuery) {
+            throw new Error('Search query is required');
+        }
+
+        try {
+            const regex = new RegExp(searchQuery, 'i');
+            const movies = await Movie.find({
+                $or: [
+                    { movieName: { $regex: regex } },
+                    { genre: { $regex: regex } }
+                ]
+            });
+            return movies;
+        } catch (error) {
+            throw new Error('Failed to search movies');
+        }
+    }
+
+    // Original getMovies method: retrieves all movies
+    async getMovies() {
+        try {
+            return await Movie.find(); // Fetch all movies
+        } catch (error) {
+            throw new Error('Error retrieving movies');
+        }
+    }
+}
+
 module.exports = MovieController.getInstance();
+
 
