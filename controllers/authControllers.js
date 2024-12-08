@@ -5,7 +5,6 @@ const User = require('../models/User');
 const Promotion = require('../models/Promotion');
 require('dotenv').config();
 
-// Configure Email Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -14,7 +13,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Helper Functions for Sending Emails
 const sendConfirmationEmail = (userEmail, name, token) => {
     const confirmationUrl = `http://localhost:3000/Success?token=${token}`;
     const mailOptions = {
@@ -95,7 +93,6 @@ function decrypt(encryptedData, iv) {
     return decrypted;
 }
 
-// API route to handle email sending
 exports.sendOrderConfirmationEmail = async (req, res) => {
     try {
         await sendOrderConfirmationEmail(req.body);
@@ -105,7 +102,6 @@ exports.sendOrderConfirmationEmail = async (req, res) => {
     }
 };
 
-// Registration Function
 exports.registerUser = async (req, res) => {
     const { name, email, password, userStatus, billingAddress, city, postalCode, state, creditCardNumber, expiryDate, cvv, promotionOptIn } = req.body;
 
@@ -149,7 +145,6 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// Forgot Password Function
 exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
 
@@ -173,7 +168,6 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-// Verify Reset Token (GET)
 exports.verifyResetToken = async (req, res) => {
     const { token } = req.query;
 
@@ -191,7 +185,6 @@ exports.verifyResetToken = async (req, res) => {
     }
 };
 
-// Reset Password (POST)
 exports.resetPassword = async (req, res) => {
     const { token, password } = req.body;
 
@@ -204,7 +197,7 @@ exports.resetPassword = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
-        user.resetToken = undefined; // Clear the token after use
+        user.resetToken = undefined; 
         user.tokenCreatedAt = undefined;
         await user.save();
 
@@ -218,18 +211,15 @@ exports.resetPassword = async (req, res) => {
 exports.addPromotion = async (req, res) => {
     const { title, discount, code, validUntil } = req.body;
     console.log(req.body);
-
-
+    
     try {
         const newPromotion = new Promotion({ title, discount, code, validUntil });
         await newPromotion.save();
 
-        // Find users opted into promotions
         const optedInUsers = await User.find({ promotionOptIn: true });
 
         console.log(optedInUsers);
 
-        // Send email notification to each opted-in user
         optedInUsers.forEach((user) => {
             const mailOptions = {
                 from: 'your-email@gmail.com',
@@ -254,18 +244,14 @@ exports.addPromotion = async (req, res) => {
     }
 };
 
-// Get Promotions Function
 exports.getPromotions = async (req, res) => {
     try {
-        // Fetch all promotions from the database
         const promotions = await Promotion.find();
 
-        // If no promotions are found
         if (!promotions || promotions.length === 0) {
             return res.status(404).send('No promotions found.');
         }
 
-        // Send promotions as a response
         res.status(200).json(promotions);
     } catch (error) {
         console.error('Error fetching promotions:', error);
@@ -274,7 +260,6 @@ exports.getPromotions = async (req, res) => {
 };
 
 
-// Login Function
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
     console.log(req.body);

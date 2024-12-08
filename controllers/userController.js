@@ -4,9 +4,9 @@ const crypto = require('crypto');
 
 function encrypt(text) {
     const algorithm = 'aes-256-cbc';
-    const secretKey = 'your-secret-key';  // Replace with your real secret key
-    const key = crypto.createHash('sha256').update(secretKey).digest(); // Generate 32-byte key
-    const iv = crypto.randomBytes(16); // Generate 16-byte IV
+    const secretKey = 'your-secret-key';  
+    const key = crypto.createHash('sha256').update(secretKey).digest(); 
+    const iv = crypto.randomBytes(16); 
     console.log('Generated IV (hex):', iv.toString('hex'));
 
 
@@ -20,8 +20,8 @@ function encrypt(text) {
 function decrypt(encryptedData, iv) {
     console.log('IV passed for decryption (hex):', iv);
     const algorithm = 'aes-256-cbc';
-    const secretKey = 'your-secret-key'; // Must match the key used in encryption
-    const key = crypto.createHash('sha256').update(secretKey).digest(); // Generate 32-byte key
+    const secretKey = 'your-secret-key'; 
+    const key = crypto.createHash('sha256').update(secretKey).digest(); 
 
     const decipher = crypto.createDecipheriv(algorithm, key, Buffer.from(iv, 'hex'));
     let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
@@ -29,7 +29,6 @@ function decrypt(encryptedData, iv) {
     return decrypted;
 }
 
-// Email verification endpoint
 exports.verifyEmail = async (req, res) => {
     const { token } = req.query;
     try {
@@ -51,7 +50,6 @@ exports.verifyEmail = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     const { email, name, password, currentPassword, confirmPassword, billingAddress, city, postalCode, state, creditCards, promotions } = req.body;
-    console.log('Request body:', req.body);
 
     try {
         console.log('Received update profile request for email:', email);
@@ -63,20 +61,16 @@ exports.updateProfile = async (req, res) => {
                 creditCards.map(async (card, index) => {
                     console.log(`Processing card ${index + 1}:`, card);
 
-                    // Validate card data
                     if (!card.cardLast4 || !card.expiryDate || !card.cvv) {
                         console.error('Missing required credit card fields for card', index + 1, card);
                         throw new Error('Incomplete credit card data');
                     }
 
-                    // Encrypt card number and cvv
-                    const encryptedCardNumber = encrypt(card.cardLast4);  // Encrypting the card's last 4 digits
-                    const encryptedCvv = encrypt(card.cvv);  // Encrypting the CVV
-                    const encryptedExpiryDate = encrypt(card.expiryDate);  // Encrypting the expiry date
+                    const encryptedCardNumber = encrypt(card.cardLast4);  
+                    const encryptedCvv = encrypt(card.cvv);  
+                    const encryptedExpiryDate = encrypt(card.expiryDate);  
 
-                    console.log(`Card ${index + 1} encryption complete. Encrypted data:`);
-                    console.log('Encrypted Card Number:', encryptedCardNumber.encryptedData);
-                    console.log('Encrypted CVV:', encryptedCvv.encryptedData);
+                    
 
                     return {
                         encryptedData: encryptedCardNumber.encryptedData,
@@ -91,10 +85,9 @@ exports.updateProfile = async (req, res) => {
             console.log('No credit cards provided, skipping encryption.');
         }
 
-        // Prepare the update data object
         const updateData = {
             name,
-            billingAddress, // Updating billing address directly
+            billingAddress, 
             city,
             postalCode,
             state,
@@ -110,11 +103,10 @@ exports.updateProfile = async (req, res) => {
                 encryptedData: card.encryptedCvvData,
                 iv: card.cvvIv,
             })),
-            promotionOptIn: promotions, // Updating promotion opt-in status
+            promotionOptIn: promotions, 
         };
 
         if (password) {
-            // Check if password is provided, and hash it if it is
             if (password !== confirmPassword) {
                 return res.status(400).json({ error: 'Passwords do not match' });
             }
@@ -125,7 +117,6 @@ exports.updateProfile = async (req, res) => {
 
         console.log('Final update data:', updateData);
 
-        // Update the user document in the database
         const updatedUser = await User.findOneAndUpdate({ email }, updateData, { new: true });
 
         if (!updatedUser) {
@@ -134,14 +125,13 @@ exports.updateProfile = async (req, res) => {
         }
 
         console.log('User profile updated:', updatedUser);
-        return res.status(200).json(updatedUser); // Send back updated user data
+        return res.status(200).json(updatedUser); 
     } catch (err) {
         console.error('Error updating user profile:', err);
-        return res.status(500).json({ error: 'Internal server error' }); // Handle server error
+        return res.status(500).json({ error: 'Internal server error' }); 
     }
 };
 
-// Get user profile endpoint
 exports.getUserProfile = async (req, res) => {
     const { email } = req.query;
 
@@ -152,18 +142,11 @@ exports.getUserProfile = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        const decryptedCreditCardNumber = user.creditCardNumber.map(cc => decrypt(cc.encryptedData, cc.iv)); // Assuming it's an array of encrypted card numbers
+        const decryptedCreditCardNumber = user.creditCardNumber.map(cc => decrypt(cc.encryptedData, cc.iv));
 
-        console.log(decryptedCreditCardNumber);
 
-        const decryptedExpiryDate = user.expiryDate.map(exp => decrypt(exp.encryptedData, exp.iv)); // Decrypt expiry date
-        console.log(decryptedExpiryDate);
-
-        const decryptedCVV = user.cvv.map(cvv => decrypt(cvv.encryptedData, cvv.iv)); // Decrypt CVV
-
-        console.log(decryptedCVV);
-
-        // Return the decrypted data to the frontend
+        const decryptedExpiryDate = user.expiryDate.map(exp => decrypt(exp.encryptedData, exp.iv)); 
+        const decryptedCVV = user.cvv.map(cvv => decrypt(cvv.encryptedData, cvv.iv)); 
         res.json({
             name: user.name,
             email: user.email,
@@ -174,9 +157,9 @@ exports.getUserProfile = async (req, res) => {
             state: user.state,
 
             creditCards: decryptedCreditCardNumber.map((number, index) => ({
-                cardLast4: number.slice(-4), // Show only the last 4 digits
-                expiryDate: decryptedExpiryDate[index], // Assuming dates are stored in parallel arrays
-                cvv: decryptedCVV[index], // Return the decrypted CVV here
+                cardLast4: number.slice(-4), 
+                expiryDate: decryptedExpiryDate[index], 
+                cvv: decryptedCVV[index], 
             })),
             promotionOptIn: user.promotionOptIn
 
