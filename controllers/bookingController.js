@@ -157,12 +157,14 @@ exports.getBookedSeats = async (req, res) => {
 
 // Create a new booking
 exports.createBooking = async (req, res) => {
-    const { email, movieName, selectedDate, selectedTime, selectedSeats, ageCategories } = req.body;
+    console.log(req.body);
+    console.log("hi");
+    const { userEmail, movieName, selectedDate, selectedTime, selectedSeats, ageCategories } = req.body;
     console.log(req.body);
 
     try {
         const booking = Factory.createModel('Booking', {
-            email,
+            email: userEmail,
             movieName,
             selectedDate,
             selectedTime,
@@ -177,6 +179,45 @@ exports.createBooking = async (req, res) => {
         res.status(500).json({ success: false, message: 'Booking creation failed' });
     }
 };
+
+/*exports.createBooking = async (req, res) => {
+    console.log("Request body:", req.body);
+    try {
+        const {
+            order,
+            orderTotal,
+            movieName,
+            selectedDate,
+            selectedTime,
+            selectedSeats,
+            ageCategories,
+            userEmail, // Make sure this matches the payload key
+            creditCardInfo,
+        } = req.body;
+
+        if (!userEmail) {
+            return res.status(400).json({ error: "Email is missing from the request." });
+        }
+
+        const booking = new Booking({
+            email: userEmail, // Assign correctly
+            order,
+            orderTotal,
+            movieName,
+            selectedDate,
+            selectedTime,
+            selectedSeats,
+            ageCategories,
+            creditCardInfo,
+        });
+
+        await booking.save();
+        res.status(201).json({ message: "Booking created successfully!" });
+    } catch (error) {
+        console.error("Error creating booking:", error);
+        res.status(500).json({ error: error.message });
+    }
+};*/
 
 // Function to fetch bookings by email
 exports.getBookingsByEmail = async (req, res) => {
